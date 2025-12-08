@@ -9,13 +9,12 @@ const __dirname = dirname(__filename);
 const require = createRequire(import.meta.url);
 dotenv.config({ path: join(__dirname, "../../.env") });
 const { PrismaClient } = require("../../generated/prisma/index.js");
-//import { PrismaClient } from "@prisma/client";
 
 import { PrismaPg } from "@prisma/adapter-pg";
 import pkg from "pg";
 
 const connectionString = process.env.DATABASE_URL;
-console.log("Prisma connection string:", connectionString);
+
 const pool = new pkg.Pool({ connectionString });
 const adapter = new PrismaPg(pool);
 export const prisma = new PrismaClient({
