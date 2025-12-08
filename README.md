@@ -120,13 +120,9 @@ git merge main
 
 
 ### 🚀 7) 팀에서 반드시 금지해야 할 5가지
-
-❌ main에서 직접 코딩
-
-❌ 팀원 브랜치 코드에 허락 없이 수정
-
-❌ PR 없이 바로 merge
-
-❌ 로컬 main을 pull 안 받아놓고 PR 보내는 행위
-
-❌ “commit 1, commit 2, final” 같은 의미 없는 커밋 메시지
+1. main, develop (머지담당자 제외 건드리지말기)
+2. package.json (머지담당자 제외 금지)
+3. PR 없이 바로 merge
+4. develop 최신화 꼭 할것
+5. 커밋 규칙 지킬것
+6. 팀원 브랜치 건드리면 척살
