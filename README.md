@@ -1,128 +1,149 @@
-# 🚀 팀 프로젝트 Git 협업 규칙 — 실전 버전
+# **Git 협업 규칙 v1**
 
+**1️⃣ Branch Rule**
 
+**예시 구조**
 
-## ✅ 1) 브랜치 규칙 (Branch Rule)
-<예시 구조>
-- main — 완성된 안정 버전만
-- dev — 기능 모으는 통합 브랜치(선택)
-  - feature/김수빈-담당_뭐시기
-  - feature/이보라-담당_뭐시기
-  - feature/송형욱-담당_뭐시기
-  - feature/지근영-담당_뭐시기
-  - feature/김관규-담당_뭐시기
+- `main` — 완성된 안정 버전만
+- `develop` — 기능 모으는 통합 브랜치(선택)
+- `feature/*/*`
 
-#### ✔ 브랜치 이름 규칙
-feature/본인이름-기능명
-예) feature/subin-article
+**🙆‍♂️ 브랜치 이름 규칙**
 
-
-
-
-## ✅ 2) 팀원이 자신의 브랜치에서 작업했을 때, 팀에게 알려주는 방식
-1. 커밋 푸시 후 Discord/단톡/노션에 간단 보고
-메시지 형식 통일시키면 팀 관리가 편함.
-
-[업데이트] feature/subin-article 브랜치 푸시함
-
-변경 사항:
-- Article 작성 API 완성
-- Prisma schema에 Article 모델 추가
-- Post 요청 validation 추가
-
-다른 브랜치랑 충돌 가능성: 거의 없음 / 약간 있음 / 있음
-이런 식으로 줄 요약 방식으로 보고하면 됨.
-
-
-
-
-## ✅ 3) Pull Request 규칙 (PR Rule)
-✔ PR 보낼 때 꼭 포함해야 하는 정보
-PR은 팀 문서라고 생각하면 됨.
-
-### 작업 내용
-- what: 무엇을 만들었는지
-- why: 왜 필요한지
-- how: 어떻게 구현했는지
-
-### 테스트 방법
-- 로컬에서 postman 사용해 테스트한 기록 추가
-
-### 리뷰 요청 포인트
-- validation 이 부분 확인 필요
-- prisma 명세 추가된 부분 확인 필요
-✔ PR Reviewer 지정
-팀원 두 명 이상이 리뷰 후 approve 해야 머지 가능 → 이걸 강제하려면 GitHub에서 Protect Branch 설정 가능
-
-
-
-
-## ✅ 4) 팀원들이 서로의 변경 사항을 가져오는 규칙
-- 항상 다음 순서로 진행: PR 머지됨
-- 팀장이 메인 업데이트 알림 전송
-- 팀원 명령어 실행
-  - git switch main
-  - git pull origin main
-- 각자 브랜치 최신화:
-  - git switch feature/subin-article
-  - git merge main 또는 git rebase main
-
-→ 팀원들의 브랜치는 항상 main 기반이어야 한다.
-
-
-
-## ✅ 5) 충돌(conflict) 발생 시 규칙
-#### 마스터가 팀장이라면 아래처럼 공표하면 됨
-
-- 충돌 난 사람은 절대 혼자 해결하지 말고 단톡방에 알려라
-- 충돌 메시지를 그대로 캡쳐하고 공유
-- 충돌난 파일을 팀원 2명 이상 함께 보면서 해결
-- 충돌 해결 후 푸시할 때는:
-  ```
-  git add .
-  git commit -m "fix: conflict resolved"
-  git push
-  ```
-
-
-
-## ✅ 6) 메시지 템플릿(팀에게 보고용)
-### 👤 작업 완료 보고 템플릿
-[작업 완료] feature/subin-article 브랜치
-
-#### <수정 사항>
-- Article CRUD 구현 등등
-
-#### 다음 작업
-- 댓글 API 예정
-
-#### PR 보냄 → 리뷰 부탁!
-📌 main 업데이트 템플릿
-📌 main 브랜치 최신화 알림
-
-#### <머지된 내용>
-- auth 기능
-- group 기능 일부
-
-#### 👇 업데이트 명령어
 ```
-git switch main
-git pull origin main
+feature/name/기능명
 ```
 
-#### 👇 본인 브랜치 최신화 명령어
+ex. `feature/song/comment`
+
+---
+
+**2️⃣ PR Rule**
+
 ```
-git switch feature/subin-article
-git merge main
+📌 관련 이슈 번호 ex) #이슈번호
+
+<br>
+
+📘 작업 유형
+ - [ ] 신규 기능 추가
+ - [ ] 버그 수정
+ - [ ] 리팩토링
+
+<br>
+
+📙 작업 내역 (구현 내용 및 작업 내역을 기재합니다.)
+ - 작업 내역 1
+ - 작업 내역 2
+
+<br>
+
+📕 고민 내용 (자유롭게 생각했던 바를 작성합니다.)
+ - 고민 내용 1
+ - 고민 내용 2
+
+<br>
+
+📋 체크리스트 (PR을 올리기 전에 스스로 확인해봐요!)
+ - PR 제목에 작업 내용을 요약하여 기재했는가?
+ - 코딩컨벤션을 준수하는가?
+ - 내 코드에 대해 스스로 검토를 했는가?
+
+<br>
+
+📝 특이 사항
+PR을 볼 때 주의깊게 봐야할 점이 있으면 작성해 주세요!
+
 ```
 
+**😎 PR Review (Reviewer)**
 
+- 코드 확인하기
+- 이상 있으면 `Comment`
+- 궁금한 점 있으면 `Comment`
+- 완료되었으면 `Comment` 남기고 Approve 로 리뷰 상태변경
 
+**😎 PR Review (Author)**
 
-### 🚀 7) 팀에서 반드시 금지해야 할 5가지
-1. main, develop (머지담당자 제외 건드리지말기)
-2. package.json (머지담당자 제외 금지)
-3. PR 없이 바로 merge
-4. develop 최신화 꼭 할것
-5. 커밋 규칙 지킬것
-6. 팀원 브랜치 건드리면 척살
+- Template 사용
+- 체크리스트 점검
+- 공유 (깃헙웹훅으로 공유 알림 확인)
+- Conflict(충돌) 시 헬프 요청
+- `Comment` 확인 후 수정사항 수정 혹은 헬프 요청
+- Approve가 2개 이상일 시 Git 관리자에게 Merge 요청
+
+---
+
+**3️⃣ Develop 기반 Git 최신화 Rule**
+
+> **최신화 방법**
+> 
+1. Develop Branch 디스코드 웹훅 알림 확인
+2. 팀원 각 feature 브랜치 최신화
+
+```
+// 1. Develop 브랜치 최신화
+
+git fetch
+git checkout develop
+
+// 변경사항 확인
+git diff ...origin
+
+git pull origin develop
+```
+
+```
+// 2. 자신의 브랜치 최신화 (Rebase)
+
+git checkout feature/*/*
+git rebase develop
+```
+
+---
+
+**4️⃣ Conflict Rule**
+
+- 충돌 발생 시 빠르게 헬프 요청
+- 최소 2명 달려들기
+
+```markdown
+git commit -m "fix: conflict resolved"
+```
+
+---
+
+**5️⃣ Commit Rule**
+
+**title**
+
+- **50자 제한, 마침표 제외**
+ex. `feat: comment router 추가`
+- **issue(optional) 일 경우 해시태그와 issueNumber 추가**
+ex. `#1 feat: comment router 추가`
+
+**content(optional)**
+
+- **72자 제한**
+- **How 보다 What, Why 작성**
+
+ex. 
+
+```
+- commentService.js massive 우려
+- comment.route.js 로 책임 분리
+```
+
+---
+
+**❌ `main`, `develop` Branch 는 Git 관리자: `이보라` 외 건드리지 말기**
+
+**❌ `package.json`, `package.lock` 등 프로젝트 관리자: `지근영` 외 건드리지말기**
+
+**❌ PR 없이 바로 Merge (깃헙 프로젝트에서 권한 설정)**
+
+**❌ Develop 최신화 (공유 시, 입실, 퇴실 시마다 확인) 꼭 하기**
+
+**❌ Commit Rule 지키기**
+
+**❌ 팀원 브랜치 건드리면 ‘싸우자’ 로 받아들이기**
