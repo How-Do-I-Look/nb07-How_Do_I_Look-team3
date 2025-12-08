@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
   output   = "../generated/prisma"
@@ -11,4 +5,110 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+}
+
+model Style {
+  id                BigInt        @id @default(autoincrement())
+  title             String        // 제목
+  author            String        // 작성자(닉네임)
+  description       String        // 스타일 설명
+  password          String        // 비밀번호
+  created_at        DateTime      @default(now()) @db.Timestamptz(6)  // 생성 일자
+  updated_at        DateTime      @updatedAt @db.Timestamptz(6)       // 수정 일자
+  views             Int           @default(0) // 조회수 (기본 값 0)
+  curation_count    Int           @default(0) // 큐레이팅 수 (정렬 기준 검색을위해...) (기본 값 0)
+
+  tags              StyleTag[]    // 스타일 태그
+  items             StyleItem[]   // 스타일 구성(상의 하의 아우터 등...)
+  curations         Curation[]    // 큐레이팅 목록
+  images            StyleImage[]  // 스타일 이미지
+
+  @@index([created_at])
+  @@index([views])
+  @@index([curation_count])
+}
+
+//이미 저장된 태그는 중복저장하지 않고 사용
+model Tag {
+  id               BigInt      @id @default(autoincrement())
+  name             String      @unique
+  styles           StyleTag[]
+}
+
+//최대3개
+model StyleTag {
+  id            BigInt        @id @default(autoincrement())
+  style_id      BigInt
+  tag_id        BigInt
+  created_at    DateTime      @default(now())     @db.Timestamptz(6)
+  updated_at    DateTime      @updatedAt          @db.Timestamptz(6)
+  style         Style         @relation(fields: [style_id], references: [id], onDelete: Cascade)
+  tag           Tag           @relation(fields: [tag_id], references: [id], onDelete: Cascade)
+  @@unique([style_id, tag_id])
+  @@index([tag_id])
+}
+
+enum StyleCategory {
+  TOP           // 상의
+  BOTTOM        // 하의
+  OUTER         // 아우터
+  ONEPIECE      // 원피스
+  SHOES         // 신발
+  BAG           // 가방
+  ACCESSORY     // 패션잡화
+}
+
+model StyleItem {
+  id            BigInt        @id @default(autoincrement())
+  style_id      BigInt
+  item_name     String        // 의상명
+  brand_name    String        // 브랜드명
+  category      StyleCategory // 스타일 구성의 종류(상의 하의 등....)
+  price         Int           // 금액
+  created_at    DateTime      @default(now())     @db.Timestamptz(6)
+  updated_at    DateTime      @updatedAt          @db.Timestamptz(6)
+
+  style         Style         @relation(fields: [style_id], references: [id], onDelete: Cascade)
+  @@unique([style_id, category])
+}
+
+//유저가 사진(여러장 가능)을 업로드
+model StyleImage {
+  id            BigInt        @id @default(autoincrement())
+  style_id      BigInt
+  name          String
+  path          String
+  size          Int
+  order         Int
+  created_at    DateTime      @default(now())     @db.Timestamptz(6)
+  updated_at    DateTime      @updatedAt          @db.Timestamptz(6)
+  style         Style         @relation(fields: [style_id], references: [id], onDelete: Cascade)
+
+}
+
+model Curation {
+  id            BigInt        @id @default(autoincrement())
+  style_id      BigInt
+  author        String
+  content       String
+  password      String
+  trendy        Int           @default(0)
+  personality   Int           @default(0)
+  practicality  Int           @default(0)
+  performance   Int           @default(0)
+  created_at    DateTime      @default(now())        @db.Timestamptz(6)
+  updated_at    DateTime      @updatedAt             @db.Timestamptz(6)
+
+  style          Style        @relation(fields: [style_id], references: [id], onDelete: Cascade)
+  reply          Reply?
+}
+
+model Reply {
+  id            BigInt        @id @default(autoincrement())
+  curation_id   BigInt        @unique
+  password      String
+  content       String
+  created_at    DateTime      @default(now())        @db.Timestamptz(6)
+  updated_at    DateTime      @updatedAt             @db.Timestamptz(6)
+  curation      Curation      @relation(fields: [curation_id], references: [id], onDelete: Cascade)
 }
