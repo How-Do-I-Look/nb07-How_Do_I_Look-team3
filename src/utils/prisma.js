@@ -7,6 +7,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const require = createRequire(import.meta.url);
+
 dotenv.config({ path: join(__dirname, "../../.env") });
 const { PrismaClient } = require("../../generated/prisma/index.js");
 
