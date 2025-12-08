@@ -7,8 +7,8 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const require = createRequire(import.meta.url);
-dotenv.config({ path: join(__dirname, "../.env") });
-const { PrismaClient } = require("../generated/prisma/index.js");
+dotenv.config({ path: join(__dirname, "../../.env") });
+const { PrismaClient } = require("../../generated/prisma/index.js");
 //import { PrismaClient } from "@prisma/client";
 
 import { PrismaPg } from "@prisma/adapter-pg";
