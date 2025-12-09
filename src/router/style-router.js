@@ -1,6 +1,6 @@
 import { Style, StyleComponent, Type } from "../controllers/style.js";
-import express from express;
 import { prisma } from "@prisma/client";
+import Router from "express";
 
 const styleRouter = new Router();
 // **스타일 등록**
@@ -34,11 +34,11 @@ async function createStyle(req, res) {
 
     res.status(201).json(newStyle);
   } catch (error) {
-    console.error("Error creating style:", error);
+    console.error("스타일 제작 오류:", error);
        if ( tags.length > 3 ) {
-          return res.status(400).json({ error: "Maximum of 3 tags allowed" });
+          return res.status(400).json({ error: "태그는 최대 3개까지 가능해요!" });
         }
-    res.status(500).json({ error: "Internal server error" });
+    res.status(500).json({ error: "서버 오류예요ㅜㅜ" });
   }
 }
 
@@ -57,11 +57,11 @@ async function updateStyle(req, res) {
     });
 
     if (!existingStyle) {
-      return res.status(404).json({ error: "Style not found" });
+      return res.status(404).json({ error: "스타일을 못 찾겠어요ㅜㅜ" });
     }
 
     if (existingStyle.password !== password) {
-      return res.status(403).json({ error: "Incorrect password" });
+      return res.status(403).json({ error: "비밀번호 다시 확인해줘요ㅜㅜ" });
     }
 
     const updatedStyle = await prisma.style.update({
@@ -89,8 +89,8 @@ async function updateStyle(req, res) {
 
     res.status(200).json(updatedStyle);
   } catch (error) {
-    console.error("Error updating style:", error);
-    res.status(500).json({ error: "Internal server error" });
+    console.error("스타일 업데이트 오류:", error);
+    res.status(500).json({ error: "서버 오류예요ㅜㅜ" });
   }
 }
 
@@ -108,24 +108,23 @@ async function deleteStyle(req, res) {
     });
 
     if (!existingStyle) {
-      return res.status(404).json({ error: "Style not found" });
+      return res.status(404).json({ error: "스타일을 못 찾겠어요ㅜㅜ" });
     }
 
     if (existingStyle.password !== password) {
-      return res.status(403).json({ error: "Incorrect password" });
+      return res.status(403).json({ error: "비밀번호 다시 확인해줘요ㅜㅜ" });
     }
 
     await prisma.style.delete({
       where: { id: Number(id) },
     });
 
-    res.status(200).json({ message: "Style deleted successfully" });
+    res.status(200).json({ message: "삭제 성공!" });
   } catch (error) {
-    console.error("Error deleting style:", error);
-    res.status(500).json({ error: "Internal server error" });
+    console.error("삭제 오류:", error);
+    res.status(500).json({ error: "서버 오류예요ㅜㅜ" });
   }
 }
-
 styleRouter.delete("/styles/:id", deleteStyle);     
 
 // **스타일 목록 조회**
@@ -186,8 +185,8 @@ async function getStyles(req, res) {
       currentPage: parseInt(page),
     });
   } catch (error) {
-    console.error("Error fetching styles:", error);
-    res.status(500).json({ error: "Internal server error" });
+    console.error("죄송해요ㅜㅜ 못 가져왔어요ㅜㅜ:", error);
+    res.status(500).json({ error: "서버 오류예요ㅜㅜ" });
   }
 }
 
@@ -216,7 +215,7 @@ styleRouter.get("/styles/:id", async (req, res) => {
     });
 
     if (!style) {
-      return res.status(404).json({ error: "Style not found" });
+      return res.status(404).json({ error: "못 찾겠어요ㅜㅜ" });
     }
 
     // 조회수 증가
@@ -227,8 +226,8 @@ styleRouter.get("/styles/:id", async (req, res) => {
 
     res.status(200).json(style);
   } catch (error) {
-    console.error("Error fetching style details:", error);
-    res.status(500).json({ error: "Internal server error" });
+    console.error("디테일을 못 가져왔어요...:", error);
+    res.status(500).json({ error: "서버 오류예요ㅜㅜ" });
   }
 });   
 
