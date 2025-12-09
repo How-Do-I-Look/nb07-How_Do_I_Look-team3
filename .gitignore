@@ -30,4 +30,3 @@ Thumbs.db
 
 # 프리즈마 설정
 /generated/
-/prisma/migrations
