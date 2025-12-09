@@ -10,7 +10,7 @@ export default defineConfig([
     // javascript 패턴 검사
     plugins: {
       js,
-      prettierPlugin,
+      prettier: prettierPlugin,
     },
     extends: ["js/recommended", prettierConfig],
     languageOptions: { globals: globals.node },
