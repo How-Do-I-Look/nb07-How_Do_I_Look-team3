@@ -27,6 +27,7 @@ Thumbs.db
 
 # VS Code 설정
 .vscode
-/generated/prisma
 
-/src/generated/prisma
+# 프리즈마 설정
+/generated/
+/prisma/migrations

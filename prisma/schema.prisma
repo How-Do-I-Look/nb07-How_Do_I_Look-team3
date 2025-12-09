@@ -1,15 +1,122 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
   output   = "../generated/prisma"
-
 }
 
 datasource db {
   provider = "postgresql"
+}
+
+// 스타일 본문
+model Style {
+  id                BigInt        @id @default(autoincrement()) // 고유 값
+  title             String        // 게시글 제목
+  author            String        // 작성자(닉네임)
+  description       String        // 스타일 설명
+  password          String        // 비밀번호
+  created_at        DateTime      @default(now()) @db.Timestamptz(6)  // 생성 일자
+  updated_at        DateTime      @updatedAt @db.Timestamptz(6)       // 수정 일자
+  views             Int           @default(0) // 조회수 (기본 값 0)
+  curation_count    Int           @default(0) // 큐레이팅 수 (정렬 기준 검색을위해...) (기본 값 0)
+
+  tags              StyleTag[]    // 스타일 태그
+  items             StyleItem[]   // 스타일 구성(상의 하의 아우터 등...)
+  curations         Curation[]    // 큐레이팅 목록
+  images            StyleImage[]  // 스타일 이미지
+
+  @@index([created_at])
+  @@index([views])
+  @@index([curation_count])
+}
+
+//이미 저장된 태그는 중복저장하지 않고 사용하기 위함
+model Tag {
+  id               BigInt      @id @default(autoincrement())
+  name             String      @unique  //태그명
+  styles           StyleTag[]           //중복제거를 위해..
+}
+
+//최대3개
+model StyleTag {
+  id            BigInt        @id @default(autoincrement())
+  style_id      BigInt        //스타일 아이디
+  tag_id        BigInt        //태그 아이디
+  created_at    DateTime      @default(now())     @db.Timestamptz(6) //생성 일자
+  updated_at    DateTime      @updatedAt          @db.Timestamptz(6) //수정 일자
+  style         Style         @relation(fields: [style_id], references: [id], onDelete: Cascade)
+  tag           Tag           @relation(fields: [tag_id], references: [id], onDelete: Cascade)
+  @@unique([style_id, tag_id])  // 한 스타일에서 태그가 중복될 수 없도록 지정....
+  @@index([tag_id])             // 태그 검색을 위한 인덱스 지정
+}
+
+enum StyleCategory {
+  TOP           // 상의
+  BOTTOM        // 하의
+  OUTER         // 아우터
+  ONEPIECE      // 원피스
+  SHOES         // 신발
+  BAG           // 가방
+  ACCESSORY     // 패션잡화
+}
+
+model StyleItem {
+  id            BigInt        @id @default(autoincrement()) // 고유 값
+  style_id      BigInt        // 스타일 ID
+  item_name     String        // 의상명
+  brand_name    String        // 브랜드명
+  category      StyleCategory // 스타일 구성의 종류(상의 하의 등....)
+  price         Int           // 금액
+  created_at    DateTime      @default(now())     @db.Timestamptz(6) //생성 일자
+  updated_at    DateTime      @updatedAt          @db.Timestamptz(6) //수정 일자
+  //하나의 스타일에는 여러개의 스타일 구성이 있을 수 있음( 상의 하의 등....)
+  style         Style         @relation(fields: [style_id], references: [id], onDelete: Cascade)
+
+  //한 스타일에서 동일한 구성이 중복 될 수 없도록...
+  @@unique([style_id, category])
+}
+
+
+// 스타일 이미지 정의
+model StyleImage {
+  id            BigInt        @id @default(autoincrement()) // 고유 값
+  style_id      BigInt        // 스타일 ID
+  name          String        // 이미지 명
+  path          String        // 이미지 경로
+  size          Int           // 이미지 크기
+  order         Int           // 이미지 순서 (정렬을 위함...)
+  created_at    DateTime      @default(now())     @db.Timestamptz(6) // 생성 일자
+  updated_at    DateTime      @updatedAt          @db.Timestamptz(6) // 수정 일자
+  // 스타일에 여러장의 이미지가 추가될 수 있음
+  style         Style         @relation(fields: [style_id], references: [id], onDelete: Cascade)
+
+}
+
+// 큐레이팅
+model Curation {
+  id            BigInt        @id @default(autoincrement()) // 고유 값
+  style_id      BigInt                    // 스타일 ID
+  author        String                    // 작성자(닉네임)
+  content       String                    // 큐레이팅 내용
+  password      String                    // 비밀번호
+  trendy        Int           @default(0) // 트렌디 점수 (기본 값 0)
+  personality   Int           @default(0) // 개성 점수   (기본 값 0)
+  practicality  Int           @default(0) // 실용성 점수 (기본 값 0)
+  performance   Int           @default(0) // 가성비 점수 (기본 값 0)
+  created_at    DateTime      @default(now())        @db.Timestamptz(6) //생성 일자
+  updated_at    DateTime      @updatedAt             @db.Timestamptz(6) //수정 일자
+
+  style          Style        @relation(fields: [style_id], references: [id], onDelete: Cascade)
+  reply          Reply? //답글은 하나 또는 없을 수 있음(요구사항)
+}
+
+// 큐레이팅 답글
+model Reply {
+  id            BigInt        @id @default(autoincrement()) // 고유 값
+  curation_id   BigInt        @unique // 큐레이팅 ID
+  password      String        //비밀번호
+  content       String        //답글 내용
+  created_at    DateTime      @default(now())        @db.Timestamptz(6) //생성 일자
+  updated_at    DateTime      @updatedAt             @db.Timestamptz(6) //수정 일자
+  //답글은 큐레이션에 속함
+  curation      Curation      @relation(fields: [curation_id], references: [id], onDelete: Cascade)
 }
