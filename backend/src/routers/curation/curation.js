@@ -2,7 +2,7 @@ import express from "express";
 import {
   updateCuration,
   deleteCuration,
-} from "../../controllers/curation/curationController.js";
+} from "../../services/curation/curationService.js";
 const router = express.Router();
 
 router.route("/:curationId").patch(updateCuration).delete(deleteCuration);
