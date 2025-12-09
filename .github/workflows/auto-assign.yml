@@ -1,0 +1,53 @@
+name: PR Auto Assign and Review
+
+on:
+  pull_request:
+    types: [opened, ready_for_review]
+
+permissions:
+  pull-requests: write
+
+jobs:
+  auto-assign:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Auto Assign and Request Review
+        uses: actions/github-script@v6
+        with:
+          script: |
+            // 1. PR 작성자를 Assignee로 자동 지정
+            try {
+              await github.rest.issues.addAssignees({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                assignees: [context.actor]
+              });
+            } catch (error) {
+              console.log('Failed to add assignee:', error);
+            }
+
+            // 2. 리뷰어 자동 지정
+            const reviewers = [
+              'codes-gy',
+              'subin874-hub',
+              'kimgg9310-svg',
+              'bobo-128',
+              'HenryVoid'
+            ];
+            
+            const prAuthor = context.actor;
+            const reviewersToRequest = reviewers.filter(user => user !== prAuthor);
+
+            if (reviewersToRequest.length > 0) {
+              try {
+                await github.rest.pulls.requestReviewers({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  pull_number: context.issue.number,
+                  reviewers: reviewersToRequest
+                });
+              } catch (error) {
+                console.log('Failed to request reviewers:', error);
+              }
+            }
