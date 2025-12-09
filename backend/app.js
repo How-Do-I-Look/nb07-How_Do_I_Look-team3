@@ -7,8 +7,6 @@ BigInt.prototype.toJSON = function () {
   return this.toString();
 };
 
-var aa = 1;
-
 app.use(errorHandler);
 app.listen(PORT, () => {
   console.log("서버 실행 중");

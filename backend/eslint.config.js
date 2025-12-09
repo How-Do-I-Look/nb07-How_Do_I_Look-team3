@@ -7,8 +7,6 @@ export default defineConfig([
   //ESLint가 검사할 파일 패턴
   {
     files: ["./*.{js,mjs,cjs}", "**/*.{js,mjs,cjs}"],
-
-    // javascript 패턴 검사
     plugins: {
       js,
       prettier: prettierPlugin,
