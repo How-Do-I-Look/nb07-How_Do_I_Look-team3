@@ -85,6 +85,7 @@ CREATE TABLE "Reply" (
     "id" BIGSERIAL NOT NULL,
     "curation_id" BIGINT NOT NULL,
     "password" TEXT NOT NULL,
+    "author" TEXT NOT NULL,
     "content" TEXT NOT NULL,
     "created_at" TIMESTAMPTZ(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMPTZ(6) NOT NULL,
