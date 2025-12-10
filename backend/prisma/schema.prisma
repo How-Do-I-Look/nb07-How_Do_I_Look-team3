@@ -114,6 +114,7 @@ model Reply {
   id            BigInt        @id @default(autoincrement()) // 고유 값
   curation_id   BigInt        @unique // 큐레이팅 ID
   password      String        //비밀번호
+  author        String        //답글 작성자
   content       String        //답글 내용
   created_at    DateTime      @default(now())        @db.Timestamptz(6) //생성 일자
   updated_at    DateTime      @updatedAt             @db.Timestamptz(6) //수정 일자
