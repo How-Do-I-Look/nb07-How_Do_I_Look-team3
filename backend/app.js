@@ -2,6 +2,7 @@ import express from "express";
 import { errorHandler } from "./src/errors/errorHandler.js";
 import commentRouter from "./src/routes/comment/comment.route.js";
 import curationRouter from "./src/routes/curation/curation.route.js";
+import tagRouter from "./src/routes/tag/tag.route.js";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -12,6 +13,7 @@ BigInt.prototype.toJSON = function () {
   return this.toString();
 };
 
+app.use("/tags", tagRouter);
 app.use("/curations", curationRouter);
 app.use("/comments", commentRouter);
 
