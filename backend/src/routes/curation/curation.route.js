@@ -3,8 +3,8 @@ import {
   updateCuration,
   deleteCuration,
 } from "../../services/curation/curation.service.js";
-const router = express.Router();
+const curationRouter = express.Router();
 
-router.route("/:curationId").patch(updateCuration).delete(deleteCuration);
+curationRouter.route("/:curationId").patch(updateCuration).delete(deleteCuration);
  
-export default router;
+export default curationRouter;
