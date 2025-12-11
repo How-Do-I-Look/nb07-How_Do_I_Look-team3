@@ -2,11 +2,13 @@ import express from "express";
 import cors from "cors";
 import { errorHandler } from "./src/errors/errorHandler.js";
 import curationRouter from "./src/routes/curation/curation.route.js";
+import tagRouter from "./src/routes/tag/tag.route.js";
 import styleRouter from "./src/routes/style/style.route.js";
 import { multerUtil as multer } from "./src/utils/multer.js";
 import { createStyleImage } from "./src/services/style/style.service.js";
 import path from "path";
 import { fileURLToPath } from "url";
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const app = express();
@@ -27,6 +29,7 @@ BigInt.prototype.toJSON = function () {
   return this.toString();
 };
 
+app.use("/tags", tagRouter);
 app.use("/curations", curationRouter);
 app.use("/styles", styleRouter);
 app.post("/images", multer.single("image"), (req, res, next) => {
