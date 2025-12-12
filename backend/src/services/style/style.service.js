@@ -147,6 +147,13 @@ export async function updateStyle(styleId, title, description, password, items, 
 export async function deleteStyle(styleId, password) {
   try {
 
+    const findStyle = await prisma.style.findUnique({
+      where : {
+        id : styleId,
+        password,
+      }
+    });
+    if(!findStyle) throw new NotFoundError("존재하지않습니다.");
     const existStyle = await prisma.style.findUnique({
       where: { id: styleId },
     });
@@ -156,12 +163,7 @@ export async function deleteStyle(styleId, password) {
     if (existStyle.password !== password) {
       return new ForbiddenError('비밀번호가 틀렸습니다.');
     }
-    const findStyle = await prisma.style.findUnique({
-        where : {
-          id : styleId,
-        }
-    });
-    if(!findStyle) throw new NotFoundError("존재하지않습니다.");
+
     if(findStyle.password !== password) throw new ForbiddenError("비밀번호가 틀렸습니다");
     const deleteStyle = await prisma.style.delete({
       where: {

@@ -64,16 +64,10 @@ router
       if (!password) {
         throw new BadRequestError("필수 입력 값이 누락되었습니다. : password");
       }
-      const findStyle = await prisma.style.findUnique({
-        where : {
-          id : styleId,
-          password,
-        }
-      });
-      if(!findStyle) throw new NotFoundError("존재하지않습니다.");
-      const deletedStyle = await deleteStyle(styleId, password);
 
-      res.status(200).json({ deletedStyle });
+      const deletedStyle = deleteStyle(styleId, password);
+
+      res.status(200).json(deletedStyle);
     } catch(error) {
       next(error);
     }
