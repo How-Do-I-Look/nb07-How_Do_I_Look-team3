@@ -1,6 +1,6 @@
 import express from "express";
 import cors from "cors";
-import { errorHandler } from "./src/errors/errorHandler.js";
+import { errorHandler, NotFoundError } from "./src/errors/errorHandler.js";
 import curationRouter from "./src/routes/curation/curation.route.js";
 import styleRouter from "./src/routes/style/style.route.js";
 import { multerUtil as multer } from "./src/utils/multer.js";
@@ -15,7 +15,7 @@ app.use(
   cors({
     origin: "http://localhost:3001",
     credentials: true,
-    // 💡 선택 사항: 허용할 HTTP 메서드 명시
+    // 💡 허용 HTTP 메서드 명시
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
   }),
 );
@@ -29,7 +29,19 @@ BigInt.prototype.toJSON = function () {
 
 app.use("/curations", curationRouter);
 app.use("/styles", styleRouter);
-app.post("/images", multer.single("image"), createStyleImage);
+app.post("/images", multer.single("image"), (req, res, next) => {
+  try {
+    const uploadFile = req.file;
+    if (!uploadFile || uploadFile.length === 0) {
+      // 파일을 찾을 수 없을 때 처리
+      return new NotFoundError("업로드된 이미지가 없습니다.");
+    }
+    const imageUrl = createStyleImage(uploadFile);
+    res.status(201).json({ imageUrl });
+  } catch (error) {
+    next(error);
+  }
+});
 
 app.use(errorHandler);
 

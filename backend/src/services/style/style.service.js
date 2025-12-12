@@ -1,19 +1,12 @@
 import { StyleCategory } from "../../../generated/prisma/index.js";
+import { Style } from "../../classes/style/style.js";
+import { BadRequestError, ForbiddenError, NotFoundError } from "../../errors/errorHandler.js";
 import { prisma } from "../../utils/prisma.js";
 
 const HOST_NAME = process.env.DEV_HOST_NAME;
-
-export async function createStyle(req, res, next) {
+export async function createStyle(author, title, description, password, items, tags, imageUrls) {
   try {
-    const {
-      nickname: author,
-      title,
-      content: description,
-      password,
-      categories: items,
-      tags,
-      imageUrls,
-    } = req.body;
+
 
     const newStyle = await prisma.$transaction(async (tr) => {
       {
@@ -35,43 +28,44 @@ export async function createStyle(req, res, next) {
           data: parseStyleItemKeys(items, styleId),
         });
         await upsertTags(tr, tags, styleId);
+
+        const result = await tr.style.findUnique({
+          where : {id:styleId},
+          include : {
+            images : {
+              orderBy : {order : 'desc'},
+            },
+            items : true,
+            tags : {
+              include : {
+                tag : true,
+              }
+            }
+          }
+        })
+        return result;
       }
     });
 
-    res.status(200).json({ message: "성공", data: newStyle });
+    return Style.fromEntity(newStyle);
   } catch (error) {
-    next(error);
+    throw new Error(error);
   }
 }
 
-export async function updateStyle(req, res, next) {
+export async function updateStyle(styleId, title, description, password, items, tags, imageUrls) {
   try {
-    const { styleId } = req.params;
-    const {
-      //nickname: author,
-      title,
-      content: description,
-      password,
-      categories: items,
-      tags,
-      imageUrls,
-    } = req.body;
-    if (!password) {
-      throw new Error("비밀번호 없음");
-    }
 
     const existStyle = await prisma.style.findUnique({
       where: { id: styleId },
     });
     if (!existStyle) {
-      return res
-        .status(404)
-        .json({ message: "수정하려는 스타일을 찾을 수 없음" });
+      return new NotFoundError('수정하려는 스타일이 없습니다.');
     }
     if (existStyle.password !== password) {
-      return res.status(403).json({ message: "비밀번호 불일치" });
+      return new ForbiddenError('비밀번호가 틀렸습니다.');
     }
-    const styleTransaction = await prisma.$transaction(async (tr) => {
+    const newStyle = await prisma.$transaction(async (tr) => {
       await tr.styleImage.deleteMany({ where: { style_id: styleId } });
       await tr.styleItem.deleteMany({ where: { style_id: styleId } });
       await tr.styleTag.deleteMany({ where: { style_id: styleId } });
@@ -81,7 +75,7 @@ export async function updateStyle(req, res, next) {
         data: {
           title,
           description,
-        },
+        }
       });
 
       if (imageUrls) {
@@ -98,59 +92,66 @@ export async function updateStyle(req, res, next) {
       if (tags) {
         await upsertTags(tr, tags, styleId);
       }
-      return updatedstyle;
+      const result = await tr.style.findUnique({
+          where : {id:styleId},
+          include : {
+            images : {
+              orderBy : {order : 'desc'},
+            },
+            items : true,
+            tags : {
+              include : {
+                tag : true,
+              }
+            }
+          }
+        })
+        return result;
     });
-    res.status(200).json({ data: styleTransaction });
+    return Style.fromEntity(newStyle);
   } catch (error) {
-    next(error);
+    throw new Error(error);
   }
 }
-export async function deleteStyle(req, res, next) {
+export async function deleteStyle(styleId, password) {
   try {
-    const { styleId } = req.params;
-    const { password } = req.body;
-
-    if (!password) {
-      throw new Error("잘못된 요청입니다");
-    }
 
     const existStyle = await prisma.style.findUnique({
       where: { id: styleId },
     });
     if (!existStyle) {
-      return res.status(404).json({ message: "존재하지 않습니다" });
+      return new NotFoundError('삭제하려는 스타일이 없습니다.');
     }
     if (existStyle.password !== password) {
-      return res.status(403).json({ message: "비밀번호가 틀렸습니다" });
+      return new ForbiddenError('비밀번호가 틀렸습니다.');
     }
-    const getStyles = await prisma.style.delete({
+    const findStyle = await prisma.style.findUnique({
+        where : {
+          id : styleId,
+        }
+    });
+    if(!findStyle) throw new NotFoundError("존재하지않습니다.");
+    if(findStyle.password !== password) throw new ForbiddenError("비밀번호가 틀렸습니다");
+    const deleteStyle = await prisma.style.delete({
       where: {
         id: styleId,
         password,
       },
     });
-    res.status(200).json({ message: "스타일 삭제 성공", data: getStyles });
+    return deleteStyle;
   } catch (error) {
-    next(error);
+    throw new Error(error);
   }
 }
 
-export function createStyleImage(req, res, next) {
+export function createStyleImage(uploadFile) {
   try {
-    const uploadFile = req.file;
-    if (!uploadFile || uploadFile.length === 0) {
-      // 파일을 찾을 수 없을 때 처리
-      return res.status(400).json({ message: "업로드된 이미지가 없습니다." });
-    }
 
     const filePath = uploadFile.path.replace(/\\/g, "/");
     const imageUrl = `${HOST_NAME}/${filePath}`;
-
-    console.log(imageUrl);
-
-    res.status(201).json({ imageUrl });
+    return imageUrl;
   } catch (error) {
-    next(error);
+    throw new Error(error);
   }
 }
 
