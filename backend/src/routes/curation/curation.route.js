@@ -8,27 +8,23 @@ import { Comment } from "../../classes/comment/comment.js";
 
 const router = express.Router();
 
-router.post("/:curationId/comments", async (req, res, next) => {
+router.route("/:curationId/comments").post(asyncHandler(async (req, res) => {
   // 답글 등록
-  try {
-    const { curationId } = req.params;
-    Comment.validateId(curationId);
+  const { curationId } = req.params;
+  Comment.validateId(curationId);
 
-    const { content, password } = req.body;
-    Comment.validateContent(content);
-    Comment.validatePassword(password);
+  const { content, password } = req.body;
+  Comment.validateContent(content);
+  Comment.validatePassword(password);
 
-    // DB 조회 후 등록
-    const comment = await createComment(curationId, {
-      content,
-      password,
-    });
+  // DB 조회 후 등록
+  const comment = await createComment(curationId, {
+    content,
+    password,
+  });
 
-    res.status(200).json(comment);
-  } catch (error) {
-    next(error);
-  }
-});
+  res.status(200).json(comment);
+}));
 
 router.route("/:curationId").patch(updateCuration).delete(deleteCuration);
 
