@@ -1,6 +1,6 @@
 import express from "express";
 import cors from "cors";
-import { errorHandler, NotFoundError } from "./src/errors/errorHandler.js";
+import { errorHandler } from "./src/errors/errorHandler.js";
 import curationRouter from "./src/routes/curation/curation.route.js";
 import styleRouter from "./src/routes/style/style.route.js";
 import { multerUtil as multer } from "./src/utils/multer.js";
