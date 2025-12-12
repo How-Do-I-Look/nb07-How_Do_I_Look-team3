@@ -5,6 +5,7 @@ import {
 } from "../../services/curation/curation.service.js";
 import { createComment } from "../../services/comment/comment.service.js";
 import { Comment } from "../../classes/comment/comment.js";
+import { asyncHandler } from "../../utils/asyncHandler.js";
 
 const router = express.Router();
 
