@@ -1,4 +1,5 @@
 /** @type {import('next').NextConfig} */
+const { hostname } = require('os');
 const path = require("path");
 
 module.exports = {
@@ -12,12 +13,16 @@ module.exports = {
       {
         protocol: "http",
         hostname: "localhost",
-        port: "3001",
+        port: "3000",
       },
       {
         protocol: "https",
         hostname: "sprint-be-project.s3.ap-northeast-2.amazonaws.com",
       },
+      {
+        protocol: "https",
+        hostname: "picsum.photos"
+      }
     ],
   },
 };

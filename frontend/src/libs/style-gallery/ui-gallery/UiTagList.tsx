@@ -9,10 +9,11 @@ type UiTagListProps = {
 }
 
 const UiTagList = ({ tags }: UiTagListProps) => {
+  const tagsToDisplay = tags || [];
   return (
     <div className={cx('container')}>
       <Tag value='' />
-      {tags.map((tag) => (
+      {tagsToDisplay.map((tag) => (
         <Tag value={tag} key={tag} />
       ))}
     </div>

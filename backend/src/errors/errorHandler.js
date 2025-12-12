@@ -39,5 +39,7 @@ export const errorHandler = (err, req, res, next) => {
 
   // 예기치 못한 에러 처리
   console.error(err);
-  return res.status(500).json({ message: "서버 내부 오류가 발생했습니다." });
+  return res
+    .status(500)
+    .json({ message: "서버 내부 오류가 발생했습니다." + err.message });
 };

@@ -1,3 +1,63 @@
 {
-  "git.ignoreLimitWarning": true
+  // 저장 시 자동 포맷 활성화
+  "editor.formatOnSave": true,
+ "eslint.run": "onSave",
+  // ESLint를 기본 포맷터로 지정 (Prettier는 ESLint 내부에서 실행)
+  "editor.defaultFormatter": "dbaeumer.vscode-eslint",
+
+  // ESLint 포맷 기능을 직접 활성화
+  "eslint.format.enable": true,
+
+  // 저장 시 자동 코드 수정 (Prettier도 여기서 실행됨)
+  "editor.codeActionsOnSave": {
+    "source.fixAll": "explicit",
+    "source.fixAll.eslint": "explicit"
+  },
+
+  // ──────────────────────────────────────────────────────────────────────────
+  // ⭐ 추천 추가 옵션들
+  // ──────────────────────────────────────────────────────────────────────────
+
+  // 탭 대신 스페이스 사용
+  "editor.insertSpaces": true,
+
+  // 들여쓰기 크기: 2칸 (JS/Node 기본 권장)
+  "editor.tabSize": 2,
+
+  // Prettier가파일 폭 판단할 때 VSCode 너비 기준으로 하지 않게 함
+  "prettier.useEditorConfig": false,
+
+  // trailing whitespace 제거
+  "files.trimTrailingWhitespace": true,
+
+  // 파일 저장 시 마지막 줄 자동 추가 (POSIX 표준)
+  "files.insertFinalNewline": true,
+
+  // 저장 시 마지막 줄 여러 개 제거
+  "files.trimFinalNewlines": true,
+
+  // 파일 변경 시 자동 저장 비활성화 (의도치 않은 포맷 방지)
+  "files.autoSave": "off",
+
+  // ESLint가 어떤 파일에서 동작하는지 로그 출력 (디버깅용)
+  "eslint.trace.server": "messages", // messages/off
+
+  // large file에서의 터미널 지연 방지
+  "search.followSymlinks": false,
+
+  // 코드 미니맵 비활성화 (원한다면 켜도 됨)
+  "editor.minimap.enabled": false,
+
+  // IntelliSense에서 자동 import 시 상대 경로 사용 (JS 프로젝트에 유리)
+  "javascript.preferences.importModuleSpecifier": "relative",
+
+  // Node.js 런타임 환경 자동 인식
+  "javascript.suggest.autoImports": true,
+
+  // 코드 폴딩 자동 확장 방지
+  "editor.foldingImportsByDefault": true,
+
+  // ESLint 에러 표시 스타일 개선
+  "editor.inlineSuggest.enabled": true
+
 }
