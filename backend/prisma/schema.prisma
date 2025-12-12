@@ -8,19 +8,20 @@ datasource db {
 }
 
 model Style {
-  id             BigInt       @id @default(autoincrement())
-  title          String
-  author         String
-  description    String
-  password       String
-  created_at     DateTime     @default(now()) @db.Timestamptz(6)
-  updated_at     DateTime     @updatedAt @db.Timestamptz(6)
-  views          Int          @default(0)
-  curation_count Int          @default(0)
-  curations      Curation[]
-  images         StyleImage[]
-  items          StyleItem[]
-  tags           StyleTag[]
+  id                BigInt        @id @default(autoincrement()) // 고유 값
+  title             String        // 게시글 제목
+  author            String        // 작성자(닉네임)
+  description       String        // 스타일 설명
+  password          String        // 비밀번호
+  created_at        DateTime      @default(now()) @db.Timestamptz(6)  // 생성 일자
+  updated_at        DateTime      @updatedAt @db.Timestamptz(6)       // 수정 일자
+  views             Int           @default(0) // 조회수 (기본 값 0)
+  curation_count    Int           @default(0) // 큐레이팅 수 (정렬 기준 검색을위해...) (기본 값 0)
+
+  tags              StyleTag[]    // 스타일 태그 최대3개
+  items             StyleItem[]   // 스타일 구성(상의 하의 아우터 등...)
+  curations         Curation[]    // 큐레이팅 목록
+  images            StyleImage[]  // 스타일 이미지
 
   @@index([created_at])
   @@index([views])
