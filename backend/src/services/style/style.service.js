@@ -3,7 +3,20 @@ import { Style } from "../../classes/style/style.js";
 import { BadRequestError, ForbiddenError, NotFoundError } from "../../errors/errorHandler.js";
 import { prisma } from "../../utils/prisma.js";
 
-const HOST_NAME = process.env.DEV_HOST_NAME;
+const HOST_NAME = process.env.DEV_HOST_NAME || 'http://localhost:3000';
+
+/**
+ * 새로운 스타일 생성
+ * 스타일 정보, 연관된 이미지, 아이템, 태그를 같이 저장
+ * @param {String} author - 작성자
+ * @param {String} title - 제목
+ * @param {String} description - 설명
+ * @param {String} password - 비밀번호
+ * @param {Object} items - 스타일 구성
+ * @param {Array} tags - 스타일 태그
+ * @param {Array} imageUrls - 스타일 이미지
+ * @returns {Style} - newStyle - 스타일 반환
+*/
 export async function createStyle(author, title, description, password, items, tags, imageUrls) {
   try {
 
@@ -53,6 +66,18 @@ export async function createStyle(author, title, description, password, items, t
   }
 }
 
+/**
+ * 스타일 수정
+ * 연관된 스타일 정보 제거 후 재 등록하는 방식으로 변경
+ * @param {BigInt} styleId - 스타일 아이디
+ * @param {String} title - 제목
+ * @param {String} description - 설명
+ * @param {String} password - 비밀번호
+ * @param {Object} items - 스타일 구성
+ * @param {Array} tags - 스타일 태그
+ * @param {Array} imageUrls - 스타일 이미지
+ * @returns {Style} - newStyle - 변경된 내용의 스타일 반환
+*/
 export async function updateStyle(styleId, title, description, password, items, tags, imageUrls) {
   try {
 
@@ -113,6 +138,12 @@ export async function updateStyle(styleId, title, description, password, items, 
     throw new Error(error);
   }
 }
+
+/**
+ * 스타일 삭제
+ * @param {BigInt} styleId - 스타일 아이디
+ * @returns {Style} - 스타일 반환
+*/
 export async function deleteStyle(styleId, password) {
   try {
 
@@ -144,9 +175,18 @@ export async function deleteStyle(styleId, password) {
   }
 }
 
+/**
+ * 스타일 이미지 등록
+ * 처리 후 등록된 이미지의 경로를 반환함
+ * @param {String} uploadFile - 업로드 이미지 경로
+ * @returns {String} - 이미지 경로 반환
+*/
 export function createStyleImage(uploadFile) {
   try {
-
+    if (!uploadFile || uploadFile.length === 0) {
+      // 파일을 찾을 수 없을 때 처리
+      return new NotFoundError("업로드된 이미지가 없습니다.");
+    }
     const filePath = uploadFile.path.replace(/\\/g, "/");
     const imageUrl = `${HOST_NAME}/${filePath}`;
     return imageUrl;

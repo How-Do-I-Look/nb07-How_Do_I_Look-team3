@@ -32,10 +32,7 @@ app.use("/styles", styleRouter);
 app.post("/images", multer.single("image"), (req, res, next) => {
   try {
     const uploadFile = req.file;
-    if (!uploadFile || uploadFile.length === 0) {
-      // 파일을 찾을 수 없을 때 처리
-      return new NotFoundError("업로드된 이미지가 없습니다.");
-    }
+
     const imageUrl = createStyleImage(uploadFile);
     res.status(201).json({ imageUrl });
   } catch (error) {
