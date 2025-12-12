@@ -67,7 +67,7 @@ router
 
       const deletedStyle = deleteStyle(styleId, password);
 
-      res.status(200).json(deletedStyle);
+      res.status(200).json({message:'스타일 삭제 성공'});
     } catch(error) {
       next(error);
     }

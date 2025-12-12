@@ -62,7 +62,7 @@ export async function createStyle(author, title, description, password, items, t
 
     return Style.fromEntity(newStyle);
   } catch (error) {
-    throw new Error(error);
+    throw error;
   }
 }
 
@@ -135,7 +135,7 @@ export async function updateStyle(styleId, title, description, password, items, 
     });
     return Style.fromEntity(newStyle);
   } catch (error) {
-    throw new Error(error);
+    throw error;
   }
 }
 
@@ -173,7 +173,7 @@ export async function deleteStyle(styleId, password) {
     });
     return deleteStyle;
   } catch (error) {
-    throw new Error(error);
+    throw error;
   }
 }
 
