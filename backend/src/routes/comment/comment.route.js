@@ -1,13 +1,13 @@
 import express from "express";
 import * as commentService from "../../services/comment/comment.service.js";
 import { Comment } from "../../classes/comment/comment.js";
+import { asyncHandler } from "../../utils/asyncHandler.js";
 
 const router = express.Router();
 
-router.route("/:commentId").put(async (req, res, next) => {
+router.route("/:commentId").put(asyncHandler(async (req, res) => {
   // 답글 수정
-  try {
-    const { commentId } = req.params;
+  const { commentId } = req.params;
     Comment.validateId(commentId);
 
     const { content, password } = req.body;
@@ -21,27 +21,19 @@ router.route("/:commentId").put(async (req, res, next) => {
     });
 
     res.status(200).json(comment);
-  } catch (error) {
-    next(error);
-  }
-})
-.delete(async (req, res, next) => {
+}))
+.delete(asyncHandler(async (req, res) => {
   // 답글 삭제
-  try {
-    const { commentId } = req.params;
-    Comment.validateId(commentId);
+  const { commentId } = req.params;
+  Comment.validateId(commentId);
 
-    const { password } = req.body;
-    Comment.validatePassword(password);
+  const { password } = req.body;
+  Comment.validatePassword(password);
 
-    // DB 조회 후 삭제
-    const result = await commentService.deleteComment(commentId, password);
+  // DB 조회 후 삭제
+  const result = await commentService.deleteComment(commentId, password);
 
-    res.status(200).json(result);
-  } catch (error) {
-    next(error);
-  }
-});
-
+  res.status(200).json(result);
+}));
 export default router;
 

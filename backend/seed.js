@@ -91,7 +91,7 @@ async function main() {
 
   // Tag Upsert (중복 제거)
   const uniqueTags = Array.from(
-    new Set(initialTags.concat(styleData.flatMap((s) => s.tags)))
+    new Set(initialTags.concat(styleData.flatMap((s) => s.tags))),
   );
   for (const tagName of uniqueTags) {
     await prisma.tag.upsert({
@@ -172,6 +172,7 @@ async function main() {
             curation_id: newCuration.id,
             content: "스타일 작성자의 답글입니다. 감사합니다.",
             password: DEFAULT_PASSWORD, // 123
+            author: newStyle.author,
           },
         });
       }

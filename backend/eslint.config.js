@@ -14,6 +14,7 @@ export default defineConfig([
     extends: ["js/recommended", prettierConfig],
     languageOptions: { globals: globals.node },
     rules: {
+      "prettier/prettier": "error",
       // console.log 허용
       "no-console": "off",
       //사용하지 않는 변수 오류 처리
