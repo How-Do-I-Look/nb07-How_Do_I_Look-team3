@@ -181,6 +181,7 @@ export async function deleteStyle(styleId, password) {
 /**
  * 스타일 상세 조회
  * @param {BigInt} styleId
+ * @returns {Style} - 스타일 상세 내용 반환
  */
 export async function detailFindStyle(styleId) {
   const detailStyle = await prisma.style.findUnique({

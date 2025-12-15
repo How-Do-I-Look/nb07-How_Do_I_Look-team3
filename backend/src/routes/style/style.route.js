@@ -10,7 +10,7 @@ import { validateRequiredField } from "../../classes/style/style.js";
 import { BadRequestError } from "../../errors/errorHandler.js";
 const router = express.Router();
 
-router.route("/").post((req, res, next) => {
+router.route("/").post(async (req, res, next) => {
   try {
     const {
       nickname: author,
@@ -24,7 +24,7 @@ router.route("/").post((req, res, next) => {
 
     validateRequiredField(req.body);
 
-    const createdStyle = createStyle(
+    const createdStyle = await createStyle(
       author,
       title,
       description,
@@ -40,7 +40,7 @@ router.route("/").post((req, res, next) => {
 });
 router
   .route("/:styleId")
-  .put((req, res, next) => {
+  .put(async (req, res, next) => {
     try {
       const { styleId } = req.params;
       const {
@@ -55,7 +55,7 @@ router
       if (!password || !title || !description || !password) {
         throw new BadRequestError("필수 입력 값이 누락되었습니다.");
       }
-      const updatedStyle = updateStyle(
+      const updatedStyle = await updateStyle(
         styleId,
         title,
         description,
@@ -69,7 +69,7 @@ router
       next(error);
     }
   })
-  .delete((req, res, next) => {
+  .delete(async (req, res, next) => {
     try {
       const { styleId } = req.params;
       const { password } = req.body;
@@ -80,7 +80,7 @@ router
         throw new BadRequestError("필수 입력 값이 누락되었습니다. : password");
       }
 
-      deleteStyle(styleId, password);
+      await deleteStyle(styleId, password);
 
       res.status(200).json({ message: "스타일 삭제 성공" });
     } catch (error) {
