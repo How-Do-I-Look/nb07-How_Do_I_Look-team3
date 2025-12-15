@@ -174,7 +174,7 @@ async function main() {
             curation_id: newCuration.id,
             content: "스타일 작성자의 답글입니다. 감사합니다.",
             password: DEFAULT_PASSWORD, // 123
-            anickname: newStyle.nickname,
+             nickname: newStyle.author,
           },
         });
       }
