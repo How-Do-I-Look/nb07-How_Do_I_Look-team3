@@ -1,117 +1,126 @@
-// - 등록된 스타일 목록을 조회할 수 있습니다.
-// - 각 스타일의 대표 이미지, 제목, 닉네임, 태그, 스타일 구성, 스타일 설명, 조회수, 큐레이팅 수가 표시됩니다.
-// - 갤러리 상단에 인기 태그가 표시됩니다. 해당 태그를 클릭하면 그 태그에 해당하는 스타일 목록이 표시됩니다.
+import { stylesRepository } from "./style.repository.js";
+import { Stylelist } from "../../classes/style/styleread.js";
+import { calculateTotalPages } from "../../utils/style/pagenation.utile.js";
 
 
-import { stylesRepository } from "./style.repository";
-import { GalleryStyleDTO } from "../classes/style.js";
-import { calculateTotalPages } from "../../utils/style/pagenation.util.js";
-
-export async function getGalleryStyles({ 
+// - 등록된 스타일 갤러리 목록을 조회할 수 있습니다.
+export async function getGalleryStyles({
      page,
-     pageSize, 
-     sortBy, 
-     searchBy, 
-     keyword, 
+     pageSize,
+     sortBy,
+     searchBy,
+     keyword,
      tag }) {
+
+
+      //요청 필드명 -> db필드명
+      let searchField = searchBy
+      if( searchBy === 'nickname') {
+        searchField = 'author';
+      } else if ( searchBy === 'content') {
+        searchField = 'description';
+      }else if (searchBy === 'tag') {
+        searchField = 'tags'
+      }
 
   // Repository 호출
   const { styles, totalItemCount } = await stylesRepository.findStylesWithOffset({
     page,
     pageSize,
     sortBy,
-    searchBy,
-    keyword,
-    tag,
+    searchBy: searchField,
+    keyword: keyword,
+    tag: tag,
   });
 
-  //전체 페이지 수 계산 (Offset 방식의 핵심 응답)
+  //전체 페이지 수 계산
     const totalPages = calculateTotalPages(totalItemCount, pageSize);
     const currentPage = page; // 요청받은 페이지가 현재 페이지
 
   const data = styles.map(style =>
-    GalleryStyleDTO.fromPrismaEntity(style)
+    Stylelist.fromPrismaEntity(style)
   )
-return { currentPage, totalPages, totalItemCount, data }; 
+return { currentPage, totalPages, totalItemCount, data };
 }
 
 
- // - 전체, 트렌디, 개성, 실용성, 가성비 기준으로 스타일 랭킹 목록을 조회할 수 있습니다.
- // - 각 스타일의 대표 이미지, 제목, 닉네임, 태그, 스타일 구성, 조회수, 큐레이팅수가 표시됩니다.
-// - 페이지네이션이 가능합니다.
-//     **Parameters**
-// - `page` : number (현재 페이지 번호)
-// - `pageSize` : number (페이지당 아이템 수)
+// - 등록된 스타일 랭킹 목록을 조회할 수 있습니다.
 // - `rankBy` : total | trendy | personality | practicality, costEffectiveness (랭킹 기준)
+//평점 평가요인
+const ratingfactors = {
+    views: 0.1, //조회수 (간접지표))
+    curations: 1.0 //큐레이팅 수 (직접적인 사용자 참여 지표)
+  };
+  const max_rating = 5.0; //최대평점
+  const max_score = 100; // 최대점수
+export class GetStyleRanks {
+  constructor(stylesRepository) {
+    this.stylesRepository = stylesRepository;
+  }
 
+    async getRankStyles({
+        page,
+        pageSize,
+        rankBy,
+      }) {
+        let sortBy = 'latest';
+        let tag = null;
 
-// **스타일 상세 조회**
-// - 갤러리, 랭킹에서 스타일을 클릭할 경우 스타일 상세 조회가 가능합니다.
-// - 이미지(여러장 가능), 제목, 닉네임, 태그, 스타일 구성, 스타일 설명, 조회수, 큐레이팅수가 표시됩니다.
-// - 해당 스타일의 큐레이팅 목록이 표시됩니다.
-// export function getstyleId(req, res, next) {
-//      try {
-//         const { id } = req.params;
-//         const styleId = parseInt(id, 10);
-//   } catch (error) {
-//     next(error);
-//   }
-// }
+        switch (rankBy) {
+            case 'total':
+            sortBy = 'total';
+            break;
+            case 'trendy':
+            sortBy = 'views';
+            break;
+            case 'personality':
+            tag = '힙스터,스트릿';
+            break;
+            case 'practicality':
+            tag = '데일리룩, 캐주얼';
+            break;
+            case 'costEffectiveness':
+            sortBy = 'costEffectiveness';
+            break;
+            default:
+            sortBy = 'latest';
+            }
+      const { styles, totalItemCount } = await stylesRepository.findStylesWithOffset({
+          page,
+          pageSize,
+          sortBy,
+          tag: tag,
+        });
 
+     //전체 페이지 수 계산
+      const totalPages = calculateTotalPages(totalItemCount, pageSize);
+      const currentPage = page;
 
+      //순위계산
+      const data = styles.map((style, index) => {
+        const ranking = (page - 1) * pageSize + index + 1;
 
+          const viewCount = style.views || 0;
+          const curationCount = style.curation_count || 0
+          //점수계산(실제 총점)
+          const rawScore = (viewCount * ratingfactors.views ) +
+                           (curationCount * ratingfactors.curations);
+         // 평점으로 변환 (0.0~5.0)
+         let rating = (rawScore / max_score) * max_rating;
+            // 평점 상한선 및 하한선 설정 (1.0 ~ 5.0 사이로 유지)
+           if (rating > max_rating) {
+               rating = max_rating;
+             }
+           if (rating < 1.0) {
+            rating = 1.0;
+            }
 
+          // 평점을 소수점 첫째 자리까지 반올림
+           rating = Math.round(rating * 10) / 10;
 
-
-// //프론트엔드 코드
-// export const getGalleryStyles = async (
-//   params: GalleryStylesSearchParams,
-// ): Promise<PaginationResponse<GalleryStyle>> => {
-//   const urlParams = new URLSearchParams()
-//   urlParams.set('sortBy', params.sortBy)
-//   urlParams.set('searchBy', params.searchBy)
-//   urlParams.set('keyword', params.keyword)
-//   urlParams.set('tag', params.tag)
-//   urlParams.set('page', params.page?.toString() ?? '1')
-//   urlParams.set('pageSize', GALLERY_STYLES_PAGE_SIZE.toString())
-//   const query = urlParams.toString()
-
-//   const response = await fetch(`${BASE_URL}/styles?${query}`, {
-//     next: { tags: ['galleryStyles'] },
-//   })
-//   const { currentPage, totalPages, totalItemCount, data } =
-//     await response.json()
-//   return { currentPage, totalPages, totalItemCount, data }
-// }
-
-// export const getGalleryTags = async () => {
-//   const response = await fetch(`${BASE_URL}/tags`, {
-//     next: { tags: ['galleryTags'] },
-//   })
-//   const { tags } = await response.json()
-//   return { tags }
-// }
-
-// export const getRankingStyles = async (
-//   params: RankingStylesSearchParams,
-// ): Promise<PaginationResponse<RankingStyle>> => {
-//   const urlParams = new URLSearchParams()
-//   urlParams.set('rankBy', params.rankBy)
-//   urlParams.set('page', params.page.toString())
-//   urlParams.set('pageSize', RANKING_STYLES_PAGE_SIZE.toString())
-//   const query = urlParams.toString()
-
-//   const response = await fetch(`${BASE_URL}/ranking?${query}`, {
-//     next: { tags: ['rankingStyles'] },
-//   })
-//   const { currentPage, totalPages, totalItemCount, data } =
-//     await response.json()
-//   return { currentPage, totalPages, totalItemCount, data }
-// }
-
-
-// export const getStyle = async (styleId: number): Promise<StyleDetail> => {
-//   const response = await fetch(`${BASE_URL}/styles/${styleId}`)
-//   const style = await response.json()
-//   return style
-// }
+         return Stylelist.fromPrismaEntity(style, ranking, rating )
+        });
+      return { currentPage, totalPages, totalItemCount, data };
+    }
+}
+export const getStyleRanks = new GetStyleRanks(stylesRepository)

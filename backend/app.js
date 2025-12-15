@@ -40,6 +40,8 @@ app.use("/curations", curationRouter);
 app.use("/styles", styleRouter);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
 app.use("/ranking", rankingRouter);
+app.use("/ranking", rankRouter);
+app.use("/comments", commentRouter);
 app.post("/images", multer.single("image"), (req, res, next) => {
   try {
     const uploadFile = req.file;
