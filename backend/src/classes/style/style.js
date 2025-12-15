@@ -15,6 +15,7 @@ export class Style {
     categories,
     tags,
     imageUrls,
+    curations,
   }) {
     this.id = id;
     this.nickname = nickname;
@@ -26,8 +27,8 @@ export class Style {
     this.categories = categories;
     this.tags = tags;
     this.imageUrls = imageUrls;
+    this.curations = curations;
   }
-
 
   static fromEntity(style) {
     const nickname = style.author || style.nickname;
@@ -38,12 +39,13 @@ export class Style {
       nickname,
       title: style.title,
       content,
-      viewCount : style.views,
-      curationCount : style.curation_count,
-      createAt : style.create_at,
-      categories : StyleItem.fromEntities(style.items),
-      tags : StyleTag.fromEntities(style.tags),
-      imageUrls : StyleImage.fromEntities(style.images),
+      viewCount: style.views,
+      curationCount: style.curation_count,
+      createAt: style.create_at,
+      categories: StyleItem.fromEntities(style.items),
+      tags: StyleTag.fromEntities(style.tags),
+      imageUrls: StyleImage.fromEntities(style.images),
+      curations: style.curations,
     });
   }
 }
@@ -52,8 +54,12 @@ export function validateRequiredField(data) {
   const nickname = data.author || data.nickname;
   const content = data.content || data.description;
 
-  if (!data.title) throw new BadRequestError("필수 입력 값이 누락되었습니다. : title");
-  if (!nickname) throw new BadRequestError("필수 입력 값이 누락되었습니다. : author");
-  if (!content) throw new BadRequestError("필수 입력 값이 누락되었습니다. : description");
-  if (!data.password) throw new BadRequestError("필수 입력 값이 누락되었습니다. : password");
+  if (!data.title)
+    throw new BadRequestError("필수 입력 값이 누락되었습니다. : title");
+  if (!nickname)
+    throw new BadRequestError("필수 입력 값이 누락되었습니다. : author");
+  if (!content)
+    throw new BadRequestError("필수 입력 값이 누락되었습니다. : description");
+  if (!data.password)
+    throw new BadRequestError("필수 입력 값이 누락되었습니다. : password");
 }

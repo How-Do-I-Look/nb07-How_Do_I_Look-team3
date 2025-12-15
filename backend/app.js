@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import { errorHandler } from "./src/errors/errorHandler.js";
 import curationRouter from "./src/routes/curation/curation.route.js";
+import commentRouter from "./src/routes/comment/comment.route.js";
 import styleRouter from "./src/routes/style/style.route.js";
 import { multerUtil as multer } from "./src/utils/multer.js";
 import { createStyleImage } from "./src/services/style/style.service.js";
@@ -27,6 +28,7 @@ BigInt.prototype.toJSON = function () {
   return this.toString();
 };
 
+app.use("/comments", commentRouter);
 app.use("/curations", curationRouter);
 app.use("/styles", styleRouter);
 app.post("/images", multer.single("image"), (req, res, next) => {
