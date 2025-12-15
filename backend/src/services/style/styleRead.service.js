@@ -58,7 +58,7 @@ export class GetStyleRanks {
     this.stylesRepository = stylesRepository;
   }
 
-    async getRankStyles({
+    async StylesRank({
         page,
         pageSize,
         rankBy,

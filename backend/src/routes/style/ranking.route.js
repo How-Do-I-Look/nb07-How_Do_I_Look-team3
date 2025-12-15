@@ -1,7 +1,7 @@
 //랭킹 라우터
 import express from "express";
 import { BadRequestError } from '../../errors/errorHandler.js';
-import { GetStyleRanks } from "../../services/style/styleRead.service.js";
+import { getStyleRanks } from "../../services/style/styleRead.service.js";
 import { asyncHandler } from "../../utils/asyncHandler.js";
 const router = express.Router();
 
@@ -40,7 +40,7 @@ router
       pageSize: parsedPageSize,
     };
 
-     const result = await GetStyleRanks.getRankStyles(queryParams);
+     const result = await getStyleRanks.StylesRank(queryParams);
      return res.status(200).json(result);
 }));
 
