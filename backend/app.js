@@ -5,7 +5,6 @@ import curationRouter from "./src/routes/curation/curation.route.js";
 import styleRouter from "./src/routes/style/style.route.js";
 import styleReadRouter from "./src/routes/style/styleRead.route.js";
 import commentRouter from "./src/routes/comment/comment.route.js";
-import rankRouter from "./src/routes/style/ranking.route.js";
 import { multerUtil as multer } from "./src/utils/multer.js";
 import { createStyleImage } from "./src/services/style/style.service.js";
 import path from "path";
@@ -36,7 +35,6 @@ BigInt.prototype.toJSON = function () {
 app.use("/curations", curationRouter);
 app.use("/styles", styleRouter);
 app.use("/style", styleReadRouter);
-app.use("/ranking", rankRouter);
 app.use("/comments", commentRouter);
 app.post("/images", multer.single("image"), (req, res, next) => {
   try {

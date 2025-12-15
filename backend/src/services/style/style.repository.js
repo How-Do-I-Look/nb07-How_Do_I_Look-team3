@@ -24,26 +24,8 @@ class StylesRepository {
         else if (sortBy === 'mostCurated') {
             orderBy.push({ curation_count: 'desc' }, { id: 'desc' });
         }
-        //전체 랭킹 정렬 (큐레이팅 수 > 조회수 )
-        else if (sortBy === 'total') {
-            orderBy.push({ curation_count: 'desc'}, {views: 'desc'},{ id: 'desc' });
-        }
-        //트랜디 정렬 (조회순 기준으로)
-        else if (sortBy === 'trendy') {
-            orderBy.push({views: 'desc'}, {created_at:'desc'});
-        }
-        //가성비 정렬 (costEffectiveness)
-        else if (sortBy === 'costEffectiveness') {
-            orderBy.push({
-                curations :{
-                    some:{
-                costEffectiveness: {
 
-                }
-                    }
-                }
-            })
-        }
+
         //  태그 필터링 조건
         if (tag) {
             const tagsArray = tag.split(',').map(t => t.trim());
@@ -54,7 +36,7 @@ class StylesRepository {
             };
         }
 
- if (keyword && searchBy) {
+            if (keyword && searchBy) {
            const containsKeyword = { contains: keyword, mode: 'insensitive' };//대소문자 상관 없이
             const searchConditions = [];
            //닉네임 검색
@@ -72,7 +54,7 @@ class StylesRepository {
             //태그 검색
             if(searchBy === 'tags' || searchBy === 'all') {
                 searchConditions.push({
-                    tags: { //연결 모델중
+                    tags: {
                     some: {
                     tag: {
                 name: containsKeyword // Tag의 'name' 필드에 키워드가 포함되는지 확인
@@ -82,10 +64,11 @@ class StylesRepository {
              });
             }
             if (searchConditions.length > 0) {
-                whereConditions.OR = searchConditions;
+                whereConditions.AND = whereConditions.AND || [];
+                whereConditions.AND.push({ OR: searchConditions });
             }
            }
-           console.log(whereConditions);
+
 
         // 실제 데이터 조회
         const styles = await prisma.style.findMany({
