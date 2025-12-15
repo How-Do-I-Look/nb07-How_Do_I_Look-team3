@@ -24,7 +24,7 @@ class StylesRepository {
         else if (sortBy === 'mostCurated') {
             orderBy.push({ curation_count: 'desc' }, { id: 'desc' });
         }
-        //종합 랭킹 정렬 (큐레이팅 수 > 조회수 )
+        //전체 랭킹 정렬 (큐레이팅 수 > 조회수 )
         else if (sortBy === 'total') {
             orderBy.push({ curation_count: 'desc'}, {views: 'desc'},{ id: 'desc' });
         }
@@ -33,7 +33,17 @@ class StylesRepository {
             orderBy.push({views: 'desc'}, {created_at:'desc'});
         }
         //가성비 정렬 (costEffectiveness)
-        else if (sortBy === 'costEffectiveness')
+        else if (sortBy === 'costEffectiveness') {
+            orderBy.push({
+                curations :{
+                    some:{
+                costEffectiveness: {
+
+                }
+                    }
+                }
+            })
+        }
         //  태그 필터링 조건
         if (tag) {
             const tagsArray = tag.split(',').map(t => t.trim());
