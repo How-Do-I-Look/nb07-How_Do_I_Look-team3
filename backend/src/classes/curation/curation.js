@@ -70,5 +70,5 @@ function validationParameter(data) {
   if (data.practicality === null || data.practicality === undefined)
     throw new BadRequestError("실용성 점수가 유효하지 않습니다.");
   if (data.costEffectiveness === null || data.costEffectiveness === undefined)
-    throw new BadRequestError("비용 효율성 점수가 유효하지 않습니다.");
+    throw new BadRequestError("가성비 점수가 유효하지 않습니다.");
 }
