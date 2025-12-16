@@ -44,3 +44,14 @@ export function safeString(value) {
   if (value === null || value === undefined) return "";
   return String(value);
 }
+
+/**
+ * 열거형 검증기
+ * - 정의된 스키마에 존재하지 않는 키면 오류 발생
+ */
+export function validateEnum(StyleCategory, key) {
+  const categoryKey = key.toUpperCase();
+  if (!StyleCategory[categoryKey]) {
+    throw new Error(`잘못된 카테고리입니다: ${key}`);
+  }
+}

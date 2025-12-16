@@ -100,10 +100,10 @@ export async function updateStyle(
     where: { id: styleId },
   });
   if (!existStyle) {
-    return new NotFoundError("수정하려는 스타일이 없습니다.");
+    throw new NotFoundError("수정하려는 스타일이 없습니다.");
   }
   if (existStyle.password !== password) {
-    return new ForbiddenError("비밀번호가 틀렸습니다.");
+    throw new ForbiddenError("비밀번호가 틀렸습니다.");
   }
   const newStyle = await prisma.$transaction(async (tr) => {
     await tr.styleImage.deleteMany({ where: { style_id: styleId } });
@@ -160,22 +160,13 @@ export async function deleteStyle(styleId, password) {
   const findStyle = await prisma.style.findUnique({
     where: {
       id: styleId,
-      password,
     },
   });
   if (!findStyle) throw new NotFoundError("존재하지않습니다.");
-  const existStyle = await prisma.style.findUnique({
-    where: { id: styleId },
-  });
-  if (!existStyle) {
-    return new NotFoundError("삭제하려는 스타일이 없습니다.");
-  }
-  if (existStyle.password !== password) {
-    return new ForbiddenError("비밀번호가 틀렸습니다.");
-  }
 
-  if (findStyle.password !== password)
+  if (findStyle.password !== password) {
     throw new ForbiddenError("비밀번호가 틀렸습니다");
+  }
   const deleteStyle = await prisma.style.delete({
     where: {
       id: styleId,
@@ -191,9 +182,32 @@ export async function deleteStyle(styleId, password) {
  * @returns {Style} - 스타일 상세 내용 반환
  */
 export async function detailFindStyle(styleId, cursor, take) {
+  const detailStyle = await prisma.style.findUnique({
+    where: { id: BigInt(styleId) },
+
+    include: {
+      images: {
+        orderBy: { order: "desc" },
+      },
+      items: true,
+      tags: {
+        include: {
+          tag: true,
+        },
+      },
+    },
+  });
+
+  if (!detailStyle) {
+    throw new NotFoundError("존재하지 않는 스타일입니다.");
+  }
+
   const orderBy = [{ created_at: "desc" }, { id: "asc" }];
   const sort = orderByToSort(orderBy);
   const cursorToken = parseContinuationToken(cursor);
+  if (!cursorToken) {
+    throw new NotFoundError("유효하지 않은 커서입니다.");
+  }
   const cursorWhere = cursorToken
     ? buildCursorWhere(cursorToken.data, cursorToken.sort)
     : {};
@@ -212,38 +226,22 @@ export async function detailFindStyle(styleId, cursor, take) {
       reply: true,
     },
   });
+
   const hasNext = entities.length > take;
   const items = hasNext ? entities.slice(0, take) : entities;
 
-  const lastElemCursor = createContinuationToken(
-    {
-      id: items[items.length - 1].id,
-      created_at: items[items.length - 1].created_at,
-    },
-    sort,
-  );
-  const detailStyle = await prisma.style.findUnique({
-    where: { id: BigInt(styleId) },
-
-    include: {
-      images: {
-        orderBy: { order: "desc" },
-      },
-      items: true,
-      tags: {
-        include: {
-          tag: true,
-        },
-      },
-    },
-  });
+  const lastElemCursor =
+    hasNext && items.length > 0
+      ? createContinuationToken(
+          {
+            id: items[items.length - 1].id,
+            created_at: items[items.length - 1].created_at,
+          },
+          sort,
+        )
+      : null;
 
   detailStyle.curations = Curation.fromEntityList(items);
-
-  if (!detailStyle) {
-    throw new NotFoundError("존재하지 않는 스타일입니다.");
-  }
-
   return {
     data: Style.fromEntity(detailStyle),
     lastElemCursor: hasNext ? lastElemCursor : null,
@@ -261,7 +259,7 @@ export function createStyleImage(uploadFile) {
   try {
     if (!uploadFile || uploadFile.length === 0) {
       // 파일을 찾을 수 없을 때 처리
-      return new NotFoundError("업로드된 이미지가 없습니다.");
+      throw new NotFoundError("업로드된 이미지가 없습니다.");
     }
     const filePath = uploadFile.path.replace(/\\/g, "/");
     const imageUrl = `${HOST_NAME}/${filePath}`;

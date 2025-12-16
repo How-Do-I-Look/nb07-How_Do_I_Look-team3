@@ -1,3 +1,5 @@
+import { BadRequestError } from "../errors/errorHandler";
+
 /**
  * Cursor 페이지네이션을 위한 continuation token 생성
  * @param {Object} lastItem - 마지막 아이템 데이터
@@ -29,6 +31,7 @@ export function parseContinuationToken(token) {
     const decoded = Buffer.from(token, "base64").toString("utf-8");
     return JSON.parse(decoded, (k, v) => (k === "id" ? BigInt(v) : v));
   } catch (e) {
+    console.error("Failed to parse continuation token:", e);
     return null;
   }
 }
