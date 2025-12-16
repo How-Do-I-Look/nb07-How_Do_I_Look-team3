@@ -30,12 +30,11 @@ jobs:
             // 2. 리뷰어 자동 지정
             const reviewers = [
               'codes-gy',
-              'subin874-hub',
               'kimgg9310-svg',
               'bobo-128',
               'HenryVoid'
             ];
-            
+
             const prAuthor = context.actor;
             const reviewersToRequest = reviewers.filter(user => user !== prAuthor);
 
