@@ -1,6 +1,13 @@
 import { StyleCategory } from "../../../generated/prisma/index.js";
+import { Curation } from "../../classes/curation/curation.js";
 import { Style } from "../../classes/style/style.js";
 import { ForbiddenError, NotFoundError } from "../../errors/errorHandler.js";
+import {
+  buildCursorWhere,
+  createContinuationToken,
+  orderByToSort,
+  parseContinuationToken,
+} from "../../utils/pagination.js";
 import { prisma } from "../../utils/prisma.js";
 
 const HOST_NAME = process.env.DEV_HOST_NAME || "http://localhost:3000";
@@ -183,7 +190,38 @@ export async function deleteStyle(styleId, password) {
  * @param {BigInt} styleId
  * @returns {Style} - 스타일 상세 내용 반환
  */
-export async function detailFindStyle(styleId) {
+export async function detailFindStyle(styleId, cursor, take) {
+  const orderBy = [{ created_at: "desc" }, { id: "asc" }];
+  const sort = orderByToSort(orderBy);
+  const cursorToken = parseContinuationToken(cursor);
+  const cursorWhere = cursorToken
+    ? buildCursorWhere(cursorToken.data, cursorToken.sort)
+    : {};
+  const baseWhere = {
+    style_id: BigInt(styleId),
+  };
+  const curationsWhere =
+    Object.keys(cursorWhere).length > 0
+      ? { AND: [baseWhere, cursorWhere] }
+      : baseWhere;
+  const entities = await prisma.curation.findMany({
+    where: curationsWhere,
+    orderBy,
+    take: take + 1,
+    include: {
+      reply: true,
+    },
+  });
+  const hasNext = entities.length > take;
+  const items = hasNext ? entities.slice(0, take) : entities;
+
+  const lastElemCursor = createContinuationToken(
+    {
+      id: items[items.length - 1].id,
+      created_at: items[items.length - 1].created_at,
+    },
+    sort,
+  );
   const detailStyle = await prisma.style.findUnique({
     where: { id: BigInt(styleId) },
 
@@ -197,19 +235,20 @@ export async function detailFindStyle(styleId) {
           tag: true,
         },
       },
-      curations: {
-        include: {
-          reply: true,
-        },
-      },
     },
   });
+
+  detailStyle.curations = Curation.fromEntityList(items);
 
   if (!detailStyle) {
     throw new NotFoundError("존재하지 않는 스타일입니다.");
   }
-  console.log(detailStyle);
-  return Style.fromEntity(detailStyle);
+
+  return {
+    data: Style.fromEntity(detailStyle),
+    lastElemCursor: hasNext ? lastElemCursor : null,
+    hasNext: hasNext,
+  };
 }
 
 /**

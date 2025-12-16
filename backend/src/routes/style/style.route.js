@@ -90,6 +90,8 @@ router
   .get(async (req, res, next) => {
     try {
       const { styleId } = req.params;
+      const { cursor, limit } = req.query;
+      const take = parseInt(limit);
       if (!styleId) {
         throw new BadRequestError("필수 입력 값이 누락되었습니다. : styleId");
       }
@@ -99,7 +101,11 @@ router
       if (styleId <= 0) {
         throw new BadRequestError("styleId는 0보다 커야 합니다.");
       }
-      const detailStyle = await detailFindStyle(styleId);
+      if (isNaN(take) || take <= 0) {
+        throw new BadRequestError("유효하지 않은 limit 값입니다.");
+      }
+
+      const detailStyle = await detailFindStyle(styleId, cursor, take);
 
       res.status(200).json(detailStyle);
     } catch (error) {
