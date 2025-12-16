@@ -1,6 +1,7 @@
-import { stylesRepository } from "./style.repository.js";
+
 import { Stylelist } from "../../classes/style/styleread.js";
-import { calculateTotalPages } from "../../utils/style/pagenation.utile.js";
+import { getPagination } from "../../utils/style/pagenation.utile.js";
+import { stylesRepository } from "./stylerepository.js";
 
 
 // - 등록된 스타일 갤러리 목록을 조회할 수 있습니다.
@@ -23,20 +24,29 @@ export async function getGalleryStyles({
         searchField = 'tags'
       }
 
-  // Repository 호출
-  const { styles, totalItemCount } = await stylesRepository.findStylesWithOffset({
+  // Repository 호출 (totalItemCount: 전체개수 ) 조회
+      const totalItemCount = await stylesRepository.countStyles({
+      searchBy: searchField,
+      keyword: keyword,
+      tag: tag,
+      });
+
+  //페이지네이션 메타데이터 계산
+  const { currentPage, totalPages, skip } = getPagination({
+    totalItemCount,
     page,
-    pageSize,
+    pageSize
+});
+
+    //Repository 호출  계산된 skip 값을 사용하여 실제 데이터를 조회
+  const styles = await stylesRepository.findStylesWithOffset({
+    skip, // (offset) 값
+    take: pageSize, //(Limit)
     sortBy,
     searchBy: searchField,
     keyword: keyword,
     tag: tag,
   });
-
-  //전체 페이지 수 계산
-    const totalPages = calculateTotalPages(totalItemCount, pageSize);
-    const currentPage = page; // 요청받은 페이지가 현재 페이지
-
   const data = styles.map(style =>
     Stylelist.fromPrismaEntity(style)
   )
