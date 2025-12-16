@@ -7,7 +7,7 @@ import {
   createContinuationToken,
   orderByToSort,
   parseContinuationToken,
-} from "../../utils/pagination.js";
+} from "../../utils/pagination.util.js";
 import { prisma } from "../../utils/prisma.js";
 
 const HOST_NAME = process.env.DEV_HOST_NAME || "http://localhost:3000";
@@ -205,9 +205,7 @@ export async function detailFindStyle(styleId, cursor, take) {
   const orderBy = [{ created_at: "desc" }, { id: "asc" }];
   const sort = orderByToSort(orderBy);
   const cursorToken = parseContinuationToken(cursor);
-  if (!cursorToken) {
-    throw new NotFoundError("유효하지 않은 커서입니다.");
-  }
+
   const cursorWhere = cursorToken
     ? buildCursorWhere(cursorToken.data, cursorToken.sort)
     : {};
