@@ -1,5 +1,3 @@
-import { BadRequestError } from "../errors/errorHandler";
-
 /**
  * Cursor 페이지네이션을 위한 continuation token 생성
  * @param {Object} lastItem - 마지막 아이템 데이터
