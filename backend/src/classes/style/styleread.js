@@ -1,4 +1,4 @@
-//목록 전체조회, 랭킹조회용
+//목록 전체조회, 랭킹조회
 export class Stylelist {
     constructor(id,thumbnail, nickname, title, tags, categories, content, viewCount,curationCount, createdAt, ranking= null, rating= null) {
         this.id = id.toString();
