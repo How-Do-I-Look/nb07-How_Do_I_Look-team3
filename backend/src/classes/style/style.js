@@ -66,7 +66,7 @@ export class Style {
       content: safeString(styleEntity.description),
       viewCount: styleEntity.views,
       curationCount: styleEntity.curation_count,
-      createdAt: styleEntity.created_at,
+      createAt: styleEntity.created_at,
     });
   }
 
