@@ -53,11 +53,6 @@ app.post("/images", multer.single("image"), (req, res, next) => {
   }
 });
 
-
-
-
-
-
 app.use(errorHandler);
 
 app.listen(PORT, () => {
