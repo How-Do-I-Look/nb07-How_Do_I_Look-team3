@@ -2,7 +2,6 @@
 function cleanControlChars(str) {
   if (typeof str !== "string") return str;
   // JSON 문자열에 포함될 수 없는 제어 문자를 공백으로 치환
-  //
   return str.replace(/[\x00-\x1F\x7F]/g, " ");
 }
 
