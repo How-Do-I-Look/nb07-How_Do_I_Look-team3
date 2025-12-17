@@ -1,5 +1,5 @@
 import { BadRequestError } from "../../errors/errorHandler.js";
-import { removeNullFields } from "../../utils/object.util.js";
+import { removeNullFields } from "../../utils/validate.util.js";
 import { safeString } from "../../utils/string.util.js";
 import { StyleImage } from "./styleImage.js";
 import { StyleItem } from "./styleItem.js";

@@ -5,7 +5,7 @@ import {
   parseContinuationToken,
   buildCursorWhere,
   orderByToSort,
-} from "../../utils/pagination.utile.js";
+} from "../../utils/pagination.util.js";
 
 //정렬 조건
 function getPrismaOrderByClause({ sortBy }) {
