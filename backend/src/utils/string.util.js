@@ -1,4 +1,6 @@
-// stringUtils.js
+// string.util.js
+
+import { StyleCategory } from "../../generated/prisma/index.js";
 
 /**
  * 문자열이 비었는지 확인
@@ -47,9 +49,16 @@ export function safeString(value) {
 
 /**
  * 열거형 검증기
- * - 정의된 스키마에 존재하지 않는 키면 오류 발생
+ * 정의된 스키마에 존재하지 않는 키면 오류 발생
+ * TOP
+ * BOTTOM
+ * OUTER
+ * ONEPIECE
+ * SHOES
+ * BAG
+ * ACCESSORY
  */
-export function validateEnum(StyleCategory, key) {
+export function validateEnumStyleCategory(key) {
   const categoryKey = key.toUpperCase();
   if (!StyleCategory[categoryKey]) {
     throw new Error(`잘못된 카테고리입니다: ${key}`);

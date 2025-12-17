@@ -54,7 +54,7 @@ export async function createStyle(
       });
       await upsertTags(tr, tags, styleId);
 
-      const result = await tr.style.findUnique({
+      const findStyle = await tr.style.findUnique({
         where: { id: styleId },
         include: {
           images: {
@@ -68,6 +68,13 @@ export async function createStyle(
           },
         },
       });
+
+      const { author, description } = findStyle;
+      const result = {
+        ...findStyle,
+        nickname: author,
+        content: description,
+      };
       return result;
     }
   });
@@ -90,7 +97,7 @@ export async function createStyle(
 export async function updateStyle(
   styleId,
   title,
-  description,
+  content,
   password,
   items,
   tags,
@@ -114,7 +121,7 @@ export async function updateStyle(
       where: { id: styleId, password },
       data: {
         title,
-        description,
+        description: content,
       },
     });
 
@@ -132,7 +139,7 @@ export async function updateStyle(
     if (tags) {
       await upsertTags(tr, tags, styleId);
     }
-    const result = await tr.style.findUnique({
+    const findStyle = await tr.style.findUnique({
       where: { id: styleId },
       include: {
         images: {
@@ -146,6 +153,14 @@ export async function updateStyle(
         },
       },
     });
+
+    const { author, description } = findStyle;
+    console.log(author, description);
+    const result = {
+      ...findStyle,
+      nickname: author,
+      content: description,
+    };
     return result;
   });
   return Style.fromEntity(newStyle);
@@ -240,8 +255,13 @@ export async function detailFindStyle(styleId, cursor, take) {
       : null;
 
   detailStyle.curations = Curation.fromEntityList(items);
+  const result = {
+    ...detailStyle,
+    nickname: detailStyle.author,
+    content: detailStyle.description,
+  };
   return {
-    data: Style.fromEntity(detailStyle),
+    data: Style.fromEntity(result),
     lastElemCursor: hasNext ? lastElemCursor : null,
     hasNext: hasNext,
   };

@@ -1,5 +1,5 @@
 import { BadRequestError } from "../../errors/errorHandler.js";
-import { safeString } from "../../utils/stringUtils.js";
+import { safeString } from "../../utils/string.util.js";
 import { Comment } from "../comment/comment.js";
 
 export class Curation {
@@ -30,7 +30,6 @@ export class Curation {
   }
 
   static fromEntity(data) {
-    if (!data) return null;
     const id = safeString(data.id);
     const styleId = safeString(data.style_id);
     validationParameter(data);
