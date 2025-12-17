@@ -25,9 +25,9 @@ const HOST_NAME = process.env.DEV_HOST_NAME || "http://localhost:3000";
  * @returns {Style} - newStyle - 스타일 반환
  */
 export async function createStyle(
-  author,
+  nickname,
   title,
-  description,
+  content,
   password,
   items,
   tags,
@@ -38,8 +38,8 @@ export async function createStyle(
       const styles = await tr.style.create({
         data: {
           title,
-          author,
-          description,
+          author: nickname,
+          description: content,
           password,
         },
       });
