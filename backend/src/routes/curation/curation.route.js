@@ -1,5 +1,7 @@
 import express from "express";
 import {
+  createCuration,
+  getCurations,
   updateCuration,
   deleteCuration,
 } from "../../services/curation/curation.service.js";
@@ -27,6 +29,13 @@ router.route("/:curationId/comments").post(asyncHandler(async (req, res) => {
   res.status(200).json(comment);
 }));
 
+// 조회 (스타일 기준)
+router.get("/style/:styleId", asyncHandler(getCurations));
+
+// 등록
+router.post("/style/:styleId", asyncHandler(createCuration));
+
+// 수정, 삭제
 router.route("/:curationId").patch(updateCuration).delete(deleteCuration);
 
 export default router;
