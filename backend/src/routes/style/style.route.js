@@ -50,7 +50,7 @@ router
         tags,
         imageUrls,
       } = req.body;
-      validateRequiredField(req.body, "PUT");
+      validateRequiredField({ styleId, ...req.body }, "PUT");
 
       const updatedStyle = await updateStyle(
         styleId,
