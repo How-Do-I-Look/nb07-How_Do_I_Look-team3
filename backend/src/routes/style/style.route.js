@@ -6,7 +6,17 @@ import {
   updateStyle,
   detailFindStyle,
 } from "../../services/style/style.service.js";
-import { validateRequiredField } from "../../classes/style/style.js";
+import {
+  validateCategories,
+  validateContent,
+  validateImageUrls,
+  validateLimit,
+  validateNickname,
+  validatePassword,
+  validateStyleId,
+  validateTags,
+  validateTitle,
+} from "../../classes/style/style.js";
 import { asyncHandler } from "../../utils/asyncHandler.js";
 const router = express.Router();
 
@@ -21,8 +31,12 @@ router.route("/").post(
       tags,
       imageUrls,
     } = req.body;
-
-    validateRequiredField(req.body, "POST");
+    validateNickname(author);
+    validateTitle(title);
+    validatePassword(password);
+    validateCategories(items);
+    validateTags(tags);
+    validateImageUrls(imageUrls);
 
     const createdStyle = await createStyle(
       author,
@@ -42,7 +56,6 @@ router
     asyncHandler(async (req, res) => {
       const { styleId } = req.params;
       const {
-        //nickname: author,
         title,
         content: description,
         password,
@@ -50,7 +63,13 @@ router
         tags,
         imageUrls,
       } = req.body;
-      validateRequiredField({ styleId, ...req.body }, "PUT");
+      validateStyleId(styleId);
+      validateTitle(title);
+      validateContent(description);
+      validatePassword(password);
+      validateCategories(items);
+      validateTags(tags);
+      validateImageUrls(imageUrls);
 
       const updatedStyle = await updateStyle(
         styleId,
@@ -68,8 +87,8 @@ router
     asyncHandler(async (req, res) => {
       const { styleId } = req.params;
       const { password } = req.body;
-
-      validateRequiredField({ styleId, password }, "DELETE");
+      validateStyleId(styleId);
+      validatePassword(password);
 
       await deleteStyle(styleId, password);
 
@@ -80,10 +99,10 @@ router
     asyncHandler(async (req, res) => {
       const { styleId } = req.params;
       const { cursor, limit } = req.query;
+
+      validateStyleId(styleId);
+      validateLimit(limit);
       const take = parseInt(limit, 10);
-
-      validateRequiredField({ styleId, take }, "GET");
-
       const detailStyle = await detailFindStyle(styleId, cursor, take);
 
       res.status(200).json(detailStyle);

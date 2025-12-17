@@ -32,8 +32,6 @@ export class Style {
   }
 
   static fromEntity(style) {
-    //const nickname = style.author || style.nickname;
-    //const content = style.content || style.description;
     return new Style({
       id: safeString(style.id.toString()),
       nickname: safeString(style.nickname),
@@ -50,90 +48,149 @@ export class Style {
   }
 }
 
-export function validateRequiredField(data, method) {
-  if (method === "PUT") {
-    validatePutRequiredField(data);
-  } else if (method === "POST") {
-    validatePostRequiredField(data);
-  } else if (method === "DELETE") {
-    validateDeleteRequiredField(data);
-  } else if (method === "GET") {
-    validateGetRequiredField(data);
-    return;
-  } else {
-    throw new BadRequestError("유효하지 않은 요청입니다.");
+export function validateStyleId(styleId) {
+  if (isNaN(styleId)) {
+    throw new BadRequestError("스타일 ID는 숫자여야 합니다");
+  }
+  if (Number(styleId) <= 0) {
+    throw new BadRequestError("스타일 ID는 0보다 커야 합니다.");
+  }
+  if (styleId === null || styleId === undefined) {
+    throw new BadRequestError("스타일 ID는 필수 입력 값입니다.");
+  }
+}
+export function validateNickname(nickname) {
+  if (!nickname || nickname.trim().length === 0) {
+    throw new BadRequestError("닉네임은 필수 입력 값입니다.");
+  }
+  if (typeof nickname !== "string") {
+    throw new BadRequestError("닉네임은 문자열이어야 합니다.");
+  }
+  if (nickname.length > 30) {
+    throw new BadRequestError("닉네임은 10자 이하여야 합니다.");
+  }
+  if (/[^a-zA-Z0-9가-힣_]/.test(nickname)) {
+    throw new BadRequestError("닉네임은 특수문자를 포함할 수 없습니다.");
+  }
+}
+export function validateTitle(title) {
+  if (!title || title.trim().length === 0) {
+    throw new BadRequestError("제목은 필수 입력 값입니다.");
+  }
+  if (typeof title !== "string") {
+    throw new BadRequestError("제목은 문자열이어야 합니다.");
+  }
+  if (title.length > 100) {
+    throw new BadRequestError("제목은 100자 이하여야 합니다.");
+  }
+}
+export function validateContent(content) {
+  if (!content || content.trim().length === 0) {
+    throw new BadRequestError("설명은 필수 입력 값입니다.");
+  }
+  if (typeof content !== "string") {
+    throw new BadRequestError("설명은 문자열이어야 합니다.");
+  }
+  if (content.length > 1000) {
+    throw new BadRequestError("설명은 1000자 이하여야 합니다.");
   }
 }
 
-function validatePostRequiredField(data) {
-  const { nickname, title, content, password, categories, tags, imageUrls } =
-    data;
-  if (!nickname)
-    throw new BadRequestError("필수 입력 값이 누락되었습니다. : nickname");
-  if (!title)
-    throw new BadRequestError("필수 입력 값이 누락되었습니다. : title");
-  if (!content)
-    throw new BadRequestError("필수 입력 값이 누락되었습니다. : content");
-  if (!password)
-    throw new BadRequestError("필수 입력 값이 누락되었습니다. : password");
-  if (!categories)
-    throw new BadRequestError("필수 입력 값이 누락되었습니다. : categories");
-  if (!tags) throw new BadRequestError("필수 입력 값이 누락되었습니다. : tags");
-  if (!imageUrls)
-    throw new BadRequestError("필수 입력 값이 누락되었습니다. : imageUrls");
-}
-function validateDeleteRequiredField(data) {
-  const { styleId, password } = data;
-  if (!styleId) {
-    throw new BadRequestError("필수 입력 값이 누락되었습니다. : styleId");
+export function validatePassword(password) {
+  if (!password || password.trim().length === 0) {
+    throw new BadRequestError("비밀번호는 필수 입력 값입니다.");
   }
-  if (isNaN(styleId)) {
-    throw new BadRequestError("styleId는 숫자여야 합니다.");
+  if (typeof password !== "string") {
+    throw new BadRequestError("비밀번호는 문자열이어야 합니다.");
   }
-  if (!password) {
-    throw new BadRequestError("필수 입력 값이 누락되었습니다. : password");
+  if (password.length < 8 || password.length > 20) {
+    throw new BadRequestError("비밀번호는 8자 이상 20자 이하이어야 합니다.");
   }
-  if (typeof password !== "string" || password.trim().length === 0) {
-    throw new BadRequestError("유효하지 않은 값입니다. : password");
+  if( /\s/.test(password)) {
+    throw new BadRequestError("비밀번호는 공백을 포함할 수 없습니다.");
   }
-}
-function validateGetRequiredField(data) {
-  const { styleId, take } = data;
-  if (!styleId) {
-    throw new BadRequestError("필수 입력 값이 누락되었습니다. : styleId");
+  if( !/[A-Z]/.test(password)) {
+    throw new BadRequestError("비밀번호는 최소 하나의 대문자를 포함해야 합니다.");
   }
-  if (isNaN(styleId)) {
-    throw new BadRequestError("styleId는 숫자여야 합니다.");
+  if( !/[a-z]/.test(password)) {
+    throw new BadRequestError("비밀번호는 최소 하나의 소문자를 포함해야 합니다.");
   }
-  if (styleId <= 0) {
-    throw new BadRequestError("styleId는 0보다 커야 합니다.");
+  if( !/[0-9]/.test(password)) {
+    throw new BadRequestError("비밀번호는 최소 하나의 숫자를 포함해야 합니다.");
   }
-  if (isNaN(take) || take <= 0) {
-    throw new BadRequestError("유효하지 않은 limit 값입니다.");
+  if( !/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+    throw new BadRequestError("비밀번호는 최소 하나의 특수문자를 포함해야 합니다.");
   }
 }
 
-function validatePutRequiredField(data) {
-  const { styleId, title, content, password, categories, tags, imageUrls } =
-    data;
-  if (!styleId) {
-    throw new BadRequestError("필수 입력 값이 누락되었습니다. : styleId");
+export function validateViewCount(viewCount) {
+  if (isNaN(viewCount)) {
+    throw new BadRequestError("조회수는 숫자여야 합니다.");
   }
-  if (isNaN(styleId)) {
-    throw new BadRequestError("styleId는 숫자여야 합니다.");
+  if (viewCount < 0) {
+    throw new BadRequestError("조회수는 음수일 수 없습니다.");
   }
-  if (styleId <= 0) {
-    throw new BadRequestError("styleId는 0보다 커야 합니다.");
+  if( !Number.isInteger(viewCount)) {
+    throw new BadRequestError("조회수는 정수여야 합니다.");
   }
-  if (!title)
-    throw new BadRequestError("필수 입력 값이 누락되었습니다. : title");
-  if (!content)
-    throw new BadRequestError("필수 입력 값이 누락되었습니다. : content");
-  if (!password)
-    throw new BadRequestError("필수 입력 값이 누락되었습니다. : password");
-  if (!categories)
-    throw new BadRequestError("필수 입력 값이 누락되었습니다. : categories");
-  if (!tags) throw new BadRequestError("필수 입력 값이 누락되었습니다. : tags");
-  if (!imageUrls)
-    throw new BadRequestError("필수 입력 값이 누락되었습니다. : imageUrls");
+}
+
+export function validateCurationCount(curationCount) {
+  if (isNaN(curationCount)) {
+    throw new BadRequestError("큐레이션 수는 숫자여야 합니다.");
+  }
+  if (curationCount < 0) {
+    throw new BadRequestError("큐레이션 수는 음수일 수 없습니다.");
+  }
+  if( !Number.isInteger(curationCount)) {
+    throw new BadRequestError("큐레이션 수는 정수여야 합니다.");
+  }
+}
+
+export function validateCurations(curations) {
+  if (!Array.isArray(curations)) {
+    throw new BadRequestError("큐레이션은 배열이어야 합니다.");
+  }
+  if( curations.length === 0) {
+    throw new BadRequestError("큐레이션은 최소 1개 이상이어야 합니다.");
+  }
+}
+
+export function validateCategories(categories) {
+  if (Object.keys(categories).length === 0) {
+    throw new BadRequestError("카테고리는 필수 입력 값입니다.");
+  }
+}
+
+export function validateTags(tags) {
+  if (!Array.isArray(tags)) {
+    throw new BadRequestError("태그는 배열이어야 합니다.");
+  }
+  if( tags.length === 0) {
+    throw new BadRequestError("태그는 최소 1개 이상이어야 합니다.");
+  }
+  if( tags.length > 3) {
+    throw new BadRequestError("태그는 최대 3개 이하이어야 합니다.");
+  }
+}
+
+export function validateImageUrls(imageUrls) {
+  if (!Array.isArray(imageUrls)) {
+    throw new BadRequestError("이미지 URL은 배열이어야 합니다.");
+  }
+  if( imageUrls.length === 0) {
+    throw new BadRequestError("이미지 URL은 최소 1개 이상이어야 합니다.");
+  }
+  if( imageUrls.length > 20) {
+    throw new BadRequestError("이미지 URL은 최대 20개 이하이어야 합니다.");
+  }
+}
+
+export function validateLimit(limit) {
+  if( isNaN(limit)) {
+    throw new BadRequestError("limit는 숫자여야 합니다.");
+  }
+  if( limit <= 0) {
+    throw new BadRequestError("limit는 0보다 커야 합니다.");
+  }
 }
