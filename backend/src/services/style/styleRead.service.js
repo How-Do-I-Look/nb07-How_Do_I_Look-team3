@@ -1,4 +1,4 @@
-import { Stylelist } from "../../classes/style/styleread.js";
+import { Style } from "../../classes/style/style.js";
 import { prisma } from "../../utils/prisma.js";
 import {
   createContinuationToken,
@@ -157,7 +157,7 @@ export async function getGalleryStyles({
     // 마지막 아이템과 정렬 기준으로 다음 커서 토큰 생성
     nextCursor = createContinuationToken(lastItem, orderByToSort(orderBy));
   }
-  const data = items.map((style) => Stylelist.fromPrismaEntity(style));
+  const data = items.map((style) => Style.fromListEntity(style));
   return {
     totalItemCount: totalItemCount,
     data,
