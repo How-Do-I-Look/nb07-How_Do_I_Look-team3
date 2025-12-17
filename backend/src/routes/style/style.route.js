@@ -4,14 +4,24 @@ import {
   createStyle,
   deleteStyle,
   updateStyle,
+  detailFindStyle,
 } from "../../services/style/style.service.js";
-import {validateRequiredField} from '../../classes/style/style.js';
-import { BadRequestError, NotFoundError } from "../../errors/errorHandler.js";
-import { prisma } from "../../utils/prisma.js";
+import {
+  validateCategories,
+  validateContent,
+  validateImageUrls,
+  validateLimit,
+  validateNickname,
+  validatePassword,
+  validateStyleId,
+  validateTags,
+  validateTitle,
+} from "../../classes/style/style.js";
+import { asyncHandler } from "../../utils/asyncHandler.js";
 const router = express.Router();
 
-router.route("/").post(async (req, res, next)=> {
-  try {
+router.route("/").post(
+  asyncHandler(async (req, res) => {
     const {
       nickname: author,
       title,
@@ -21,23 +31,31 @@ router.route("/").post(async (req, res, next)=> {
       tags,
       imageUrls,
     } = req.body;
+    validateNickname(author);
+    validateTitle(title);
+    validatePassword(password);
+    validateCategories(items);
+    validateTags(tags);
+    validateImageUrls(imageUrls);
 
-    validateRequiredField(req.body);
-
-    const createdStyle = await createStyle(author, title, description, password, items, tags, imageUrls);
+    const createdStyle = await createStyle(
+      author,
+      title,
+      description,
+      password,
+      items,
+      tags,
+      imageUrls,
+    );
     res.status(201).json(createdStyle);
-  } catch(error) {
-    next(error);
-  }
-
-});
+  }),
+);
 router
   .route("/:styleId")
-  .put(async (req, res, next) => {
-    try {
+  .put(
+    asyncHandler(async (req, res) => {
       const { styleId } = req.params;
       const {
-        //nickname: author,
         title,
         content: description,
         password,
@@ -45,33 +63,50 @@ router
         tags,
         imageUrls,
       } = req.body;
-      if (!password || !title || !description || !password) {
-        throw new BadRequestError("필수 입력 값이 누락되었습니다.");
-      }
-      const updatedStyle = await updateStyle(styleId, title, description, password, items, tags, imageUrls);
+      validateStyleId(styleId);
+      validateTitle(title);
+      validateContent(description);
+      validatePassword(password);
+      validateCategories(items);
+      validateTags(tags);
+      validateImageUrls(imageUrls);
+
+      const updatedStyle = await updateStyle(
+        styleId,
+        title,
+        description,
+        password,
+        items,
+        tags,
+        imageUrls,
+      );
       res.status(200).json(updatedStyle);
-    } catch(error) {
-      next(error);
-    }
-  })
-  .delete(async (req, res, next) => {
-    try {
+    }),
+  )
+  .delete(
+    asyncHandler(async (req, res) => {
       const { styleId } = req.params;
       const { password } = req.body;
-      if (!styleId) {
-        throw new BadRequestError("필수 입력 값이 누락되었습니다. : styleId");
-      }
-      if (!password) {
-        throw new BadRequestError("필수 입력 값이 누락되었습니다. : password");
-      }
+      validateStyleId(styleId);
+      validatePassword(password);
 
-      const deletedStyle = deleteStyle(styleId, password);
+      await deleteStyle(styleId, password);
 
-      res.status(200).json({message:'스타일 삭제 성공'});
-    } catch(error) {
-      next(error);
-    }
-  });
+      res.status(200).json({ message: "스타일 삭제 성공" });
+    }),
+  )
+  .get(
+    asyncHandler(async (req, res) => {
+      const { styleId } = req.params;
+      const { cursor, limit } = req.query;
 
+      validateStyleId(styleId);
+      validateLimit(limit);
+      const take = parseInt(limit, 10);
+      const detailStyle = await detailFindStyle(styleId, cursor, take);
+
+      res.status(200).json(detailStyle);
+    }),
+  );
 
 export default router;
