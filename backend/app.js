@@ -15,8 +15,6 @@ import { fileURLToPath } from "url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-
-
 const app = express();
 app.use("/public", express.static(path.join(__dirname, "public")));
 app.use(
@@ -51,11 +49,6 @@ app.post("/images", multer.single("image"), (req, res, next) => {
     next(error);
   }
 });
-
-
-
-
-
 
 app.use(errorHandler);
 
