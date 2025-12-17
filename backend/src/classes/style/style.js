@@ -114,7 +114,17 @@ function validateGetRequiredField(data) {
 }
 
 function validatePutRequiredField(data) {
-  const { title, content, password, categories, tags, imageUrls } = data;
+  const { styleId, title, content, password, categories, tags, imageUrls } =
+    data;
+  if (!styleId) {
+    throw new BadRequestError("필수 입력 값이 누락되었습니다. : styleId");
+  }
+  if (isNaN(styleId)) {
+    throw new BadRequestError("styleId는 숫자여야 합니다.");
+  }
+  if (styleId <= 0) {
+    throw new BadRequestError("styleId는 0보다 커야 합니다.");
+  }
   if (!title)
     throw new BadRequestError("필수 입력 값이 누락되었습니다. : title");
   if (!content)
