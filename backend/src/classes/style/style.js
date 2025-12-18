@@ -1,5 +1,6 @@
 import { BadRequestError } from "../../errors/errorHandler.js";
 import { safeString } from "../../utils/string.util.js";
+import { Curation } from "../curation/curation.js";
 import { StyleImage } from "./styleImage.js";
 import { StyleItem } from "./styleItem.js";
 import { StyleTag } from "./styleTag.js";
@@ -43,7 +44,7 @@ export class Style {
       categories: StyleItem.fromEntities(style.items),
       tags: StyleTag.fromEntities(style.tags),
       imageUrls: StyleImage.fromEntities(style.images),
-      curations: style.curations,
+      curations: Curation.fromEntityList(style.curations),
     });
   }
 }
@@ -106,20 +107,26 @@ export function validatePassword(password) {
   if (password.length < 8 || password.length > 20) {
     throw new BadRequestError("비밀번호는 8자 이상 20자 이하이어야 합니다.");
   }
-  if( /\s/.test(password)) {
+  if (/\s/.test(password)) {
     throw new BadRequestError("비밀번호는 공백을 포함할 수 없습니다.");
   }
-  if( !/[A-Z]/.test(password)) {
-    throw new BadRequestError("비밀번호는 최소 하나의 대문자를 포함해야 합니다.");
+  if (!/[A-Z]/.test(password)) {
+    throw new BadRequestError(
+      "비밀번호는 최소 하나의 대문자를 포함해야 합니다.",
+    );
   }
-  if( !/[a-z]/.test(password)) {
-    throw new BadRequestError("비밀번호는 최소 하나의 소문자를 포함해야 합니다.");
+  if (!/[a-z]/.test(password)) {
+    throw new BadRequestError(
+      "비밀번호는 최소 하나의 소문자를 포함해야 합니다.",
+    );
   }
-  if( !/[0-9]/.test(password)) {
+  if (!/[0-9]/.test(password)) {
     throw new BadRequestError("비밀번호는 최소 하나의 숫자를 포함해야 합니다.");
   }
-  if( !/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
-    throw new BadRequestError("비밀번호는 최소 하나의 특수문자를 포함해야 합니다.");
+  if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+    throw new BadRequestError(
+      "비밀번호는 최소 하나의 특수문자를 포함해야 합니다.",
+    );
   }
 }
 
@@ -130,7 +137,7 @@ export function validateViewCount(viewCount) {
   if (viewCount < 0) {
     throw new BadRequestError("조회수는 음수일 수 없습니다.");
   }
-  if( !Number.isInteger(viewCount)) {
+  if (!Number.isInteger(viewCount)) {
     throw new BadRequestError("조회수는 정수여야 합니다.");
   }
 }
@@ -142,7 +149,7 @@ export function validateCurationCount(curationCount) {
   if (curationCount < 0) {
     throw new BadRequestError("큐레이션 수는 음수일 수 없습니다.");
   }
-  if( !Number.isInteger(curationCount)) {
+  if (!Number.isInteger(curationCount)) {
     throw new BadRequestError("큐레이션 수는 정수여야 합니다.");
   }
 }
@@ -151,7 +158,7 @@ export function validateCurations(curations) {
   if (!Array.isArray(curations)) {
     throw new BadRequestError("큐레이션은 배열이어야 합니다.");
   }
-  if( curations.length === 0) {
+  if (curations.length === 0) {
     throw new BadRequestError("큐레이션은 최소 1개 이상이어야 합니다.");
   }
 }
@@ -166,10 +173,10 @@ export function validateTags(tags) {
   if (!Array.isArray(tags)) {
     throw new BadRequestError("태그는 배열이어야 합니다.");
   }
-  if( tags.length === 0) {
+  if (tags.length === 0) {
     throw new BadRequestError("태그는 최소 1개 이상이어야 합니다.");
   }
-  if( tags.length > 3) {
+  if (tags.length > 3) {
     throw new BadRequestError("태그는 최대 3개 이하이어야 합니다.");
   }
 }
@@ -178,19 +185,19 @@ export function validateImageUrls(imageUrls) {
   if (!Array.isArray(imageUrls)) {
     throw new BadRequestError("이미지 URL은 배열이어야 합니다.");
   }
-  if( imageUrls.length === 0) {
+  if (imageUrls.length === 0) {
     throw new BadRequestError("이미지 URL은 최소 1개 이상이어야 합니다.");
   }
-  if( imageUrls.length > 20) {
+  if (imageUrls.length > 20) {
     throw new BadRequestError("이미지 URL은 최대 20개 이하이어야 합니다.");
   }
 }
 
 export function validateLimit(limit) {
-  if( isNaN(limit)) {
+  if (isNaN(limit)) {
     throw new BadRequestError("limit는 숫자여야 합니다.");
   }
-  if( limit <= 0) {
+  if (limit <= 0) {
     throw new BadRequestError("limit는 0보다 커야 합니다.");
   }
 }

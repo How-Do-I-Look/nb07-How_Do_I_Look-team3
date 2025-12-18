@@ -8,6 +8,7 @@ import {
   orderByToSort,
   parseContinuationToken,
 } from "../../utils/pagination.util.js";
+import { safeNumber } from "../../utils/number.util.js";
 import { prisma } from "../../utils/prisma.js";
 
 const HOST_NAME = process.env.DEV_HOST_NAME || "http://localhost:3000";
@@ -267,6 +268,45 @@ export async function detailFindStyle(styleId, cursor, take) {
   };
 }
 
+export async function listStyleRanking(rankBy, cursor, take, page) {
+  const orderBy = [{ created_at: "desc" }, { id: "asc" }];
+  const sort = orderByToSort(orderBy);
+  const baseWhere = {};
+  const cursorToken = parseContinuationToken(cursor);
+  const cursorWhere = cursorToken
+    ? buildCursorWhere(cursorToken.data, cursorToken.sort)
+    : {};
+  const stylesWhere =
+    Object.keys(cursorWhere).length > 0
+      ? { AND: [baseWhere, cursorWhere] }
+      : baseWhere;
+  const styles = await prisma.style.findMany({
+    where: stylesWhere,
+    take: take + 1,
+    include: {
+      images: {
+        orderBy: { order: "desc" },
+      },
+      items: true,
+      tags: {
+        include: {
+          tag: true,
+        },
+      },
+      curations: true,
+    },
+  });
+  const result = {
+    currentPage: 1,
+    totalPages: 1,
+    totalItemCount: 50,
+    data: styles.map((style) => Style.fromEntity(style)),
+  };
+  const aa = calculateRating(result, rankBy);
+
+  return aa;
+}
+
 /**
  * 스타일 이미지 등록
  * 처리 후 등록된 이미지의 경로를 반환함
@@ -339,4 +379,82 @@ function parseStyleImageUrl(imageUrls, styleId) {
     };
   });
   return styleImageData;
+}
+
+export function calculateRating(params, rankBy) {
+  if (!params || !params.data) return {};
+  console.log(`rankBy : ${rankBy}`);
+  const styles = params.data.map((style) => {
+    const curations = style.curations || [];
+
+    const curationCount = curations.length;
+
+    if (curationCount === 0) {
+      //큐레이션이 없는 경우 rating을 0으로 설정
+      return {
+        ...style,
+        ranking: null, // 없는 경우 ranking값을 어떻게 할것인지 결정이...
+        rating: 0,
+      };
+    }
+
+    const totalScores = curations.reduce(
+      (sums, curation) => {
+        return {
+          ...sums,
+          trendy: safeNumber(sums.trendy) + safeNumber(curation.trendy),
+          personality:
+            safeNumber(sums.personality) + safeNumber(curation.personality),
+          practicality:
+            safeNumber(sums.practicality) + safeNumber(curation.practicality),
+          costEffectiveness:
+            safeNumber(sums.costEffectiveness) +
+            safeNumber(curation.costEffectiveness),
+        };
+      },
+      {
+        // 초기값 설정
+        trendy: 0,
+        personality: 0,
+        practicality: 0,
+        costEffectiveness: 0,
+      },
+    );
+
+    const averages = {
+      trendy: safeNumber(totalScores.trendy) / curationCount,
+      personality: safeNumber(totalScores.personality) / curationCount,
+      practicality: safeNumber(totalScores.practicality) / curationCount,
+      costEffectiveness:
+        safeNumber(totalScores.costEffectiveness) / curationCount,
+    };
+
+    const totalAverage =
+      (averages.trendy +
+        averages.personality +
+        averages.practicality +
+        averages.costEffectiveness) /
+      4;
+    let average = 0;
+    if (rankBy === "total") {
+      average = safeNumber(totalAverage);
+    } else {
+      average =
+        averages[rankBy] !== undefined
+          ? safeNumber(averages[rankBy])
+          : safeNumber(totalAverage);
+    }
+    const styleRating = Math.round(average * 10) / 10;
+
+    return {
+      ...style,
+      ranking: null,
+      rating: styleRating,
+    };
+  });
+  const sorted = [...styles].sort((a, b) => b.rating - a.rating);
+  sorted.forEach((item, index) => {
+    item.ranking = index + 1;
+  });
+  return sorted;
 }
