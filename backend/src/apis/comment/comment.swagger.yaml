@@ -1,0 +1,105 @@
+tags:
+  - name: Comments
+    description: 댓글 관리 API
+paths:
+  /curations/{curationId}/comments:
+    post:
+      summary: 답글 등록
+      description: 특정 큐레이션에 새로운 답글을 등록합니다
+      tags:
+        - Comments
+      parameters:
+        - in: path
+          name: curationId
+          required: true
+          schema:
+            type: string
+            description: 답글을 작성할 대상 큐레이션 아이디
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - content
+                - password
+              properties:
+                content:
+                  type: string
+                  description: 답글 내용
+                password:
+                  type: string
+                  description: 답글 수정을 위한 비밀번호
+      responses:
+        "200":
+          description: 답글 등록 성공
+        "400":
+          description: 유효성 검사 실패
+  /comments/{commentId}:
+    put:
+      summary: 답글 수정
+      tags:
+        - Comments
+      parameters:
+        - in: path
+          name: commentId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                content:
+                  type: string
+                password:
+                  type: string
+                  description: 답글 비밀번호
+              required:
+                - content
+                - password
+      responses:
+        "200":
+          description: 수정 성공
+        "400":
+          description: 잘못된 요청
+        "403":
+          description: 비밀번호 불일치
+        "404":
+          description: 답글을 찾을 수 없음
+
+    delete:
+      summary: 답글 삭제
+      tags:
+        - Comments
+      parameters:
+        - in: path
+          name: commentId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                password:
+                  type: string
+                  description: 답글 비밀번호
+              required:
+                - password
+      responses:
+        "200":
+          description: 수정 성공
+        "400":
+          description: 잘못된 요청
+        "403":
+          description: 비밀번호 불일치
+        "404":
+          description: 답글을 찾을 수 없음
