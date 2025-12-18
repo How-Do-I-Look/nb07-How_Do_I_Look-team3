@@ -32,35 +32,6 @@ router.route("/:curationId/comments").post(asyncHandler(async (req, res) => {
   res.status(200).json(comment);
 }));
 
-// 조회, 등록
-router.route("/style/:styleId")
-
-.get(asyncHandler(async (req, res) => {
-
-  const { styleId } = req.params;
-  const {page = 1, pageSize = 10, searchBy, keyword,} = req.query;
-
-  CurationValidator.validateId(styleId);
-  CurationValidator.validateList( {styleId, page, pageSize, searchBy, keyword} );
-
-  const curation = await getCurations(styleId, page, pageSize, searchBy, keyword);
-
-  res.status(200).json(curation);
-}))
-
-.post(asyncHandler(async (req, res) => {
-
-  const { styleId } = req.params;
-  const { nickname, content, password, trendy, personality, practicality, costEffectiveness } = req.body;
-
-  CurationValidator.validateId(styleId);
-  CurationValidator.validateCreate( {styleId, nickname, content, password, trendy, personality, practicality, costEffectiveness} );
-
-  const curation = await createCuration(styleId, nickname, content, password, trendy, personality, practicality, costEffectiveness);
-
-  res.status(200).json(curation);
-}));
-
 // 수정, 삭제
 router.route("/:curationId")
 

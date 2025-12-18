@@ -51,9 +51,6 @@ export class CurationValidator {
       }
     }
 
-    if(!keyword) {
-      throw new BadRequestError("keyword가 필요합니다.");
-    }
   }
 
 

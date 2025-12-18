@@ -40,29 +40,26 @@ export const getCurations = async (styleId, page, pageSize, searchBy, keyword) =
 
 
   if(searchBy !== '' && keyword !== '') {
-    console.log('aaa');
     if(searchBy === 'nickname') {
       curationWhere.nickname = { contains: keyword };
-      console.log('bbb');
     }
     if(searchBy === "content") {
       curationWhere.content = { contains: keyword };
-      console.log('cc');
     }
   }
 
 
 
-  // if (searchBy && keyword) {
-  //   if (searchBy === "nickname") {
-  //     curationWhere.nickname = { contains: keyword };
-  //   }
+  if (searchBy && keyword) {
+    if (searchBy === "nickname") {
+      curationWhere.nickname = { contains: keyword };
+    }
 
-  //   if (searchBy === "content") {
-  //     curationWhere.content = { contains: keyword };
-  //   }
+    if (searchBy === "content") {
+      curationWhere.content = { contains: keyword };
+    }
 
-  // }
+  }
 
   const totalItemCount = await prisma.curation.count({ where :curationWhere });
   const totalPages = Math.ceil(totalItemCount / pageSize);
