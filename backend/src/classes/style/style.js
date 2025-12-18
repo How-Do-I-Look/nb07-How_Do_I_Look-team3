@@ -230,11 +230,28 @@ export function validateImageUrls(imageUrls) {
   }
 }
 
+// 페이지 번호만 검사
+export function validatePage(page) {
+  if (page === undefined || page === null) return;
+  const parsedPage = parseInt(page, 10);
+  if (isNaN(parsedPage) || parsedPage < 1) {
+    throw new BadRequestError("page는 1 이상의 숫자여야 합니다.");
+  }
+}
+//페이지 크기(limit)만 검사
 export function validateLimit(limit) {
-  if (isNaN(limit)) {
+  const parsedLimit = parseInt(limit, 10);
+  if (isNaN(parsedLimit)) {
     throw new BadRequestError("limit는 숫자여야 합니다.");
   }
-  if (limit <= 0) {
-    throw new BadRequestError("limit는 0보다 커야 합니다.");
+  if (parsedLimit <= 0 || parsedLimit > 30) {
+    throw new BadRequestError("limit는 1에서 30 사이여야 합니다.");
+  }
+}
+
+export function validateSortBy(sortBy) {
+  const validGallerySorts = ["latest", "mostViewed", "mostCurated"];
+  if (!validGallerySorts.includes(sortBy)) {
+    throw new BadRequestError(`잘못된 정렬 기준입니다: ${sortBy}`);
   }
 }
