@@ -1,3 +1,10 @@
+//JSON 문자열에 포함될 수 없는 제어 문자를 제거합니다. (안전장치)
+function cleanControlChars(str) {
+  if (typeof str !== "string") return str;
+  // JSON 문자열에 포함될 수 없는 제어 문자를 공백으로 치환
+  return str.replace(/[\x00-\x1F\x7F]/g, " ");
+}
+
 /**
  * Cursor 페이지네이션을 위한 continuation token 생성
  * @param {Object} lastItem - 마지막 아이템 데이터
@@ -6,14 +13,32 @@
  */
 export function createContinuationToken(lastItem, sort) {
   if (!lastItem) return null;
-
+  // 커서에 필요한 필드(정렬 필드 + ID)만 추출
+  const cursorData = {};
+  const sortFields = sort.map((s) => s[0]);
+  // ID 필드는 필수 포함 (복합 정렬의 마지막 보조 키)
+  cursorData.id = lastItem.id;
+  // 모든 정렬 필드의 값을 추출 (created_at, views, curation_count 등)
+  sortFields.forEach((field) => {
+    cursorData[field] = lastItem[field];
+  });
   const token = {
-    data: lastItem,
+    data: cursorData,
     sort,
   };
 
   return Buffer.from(
-    JSON.stringify(token, (k, v) => (k === "id" ? v.toString() : v)),
+    JSON.stringify(token, (key, value) => {
+      //id는 BigInt 문제를 위해 toString 처리
+      if (key === "id") {
+        return value.toString();
+      }
+      //문자열 값에 포함된 유효하지 않은 제어 문자 제거
+      if (typeof value === "string") {
+        return cleanControlChars(value);
+      }
+      return value;
+    }),
   ).toString("base64");
 }
 

@@ -1,4 +1,5 @@
 import { BadRequestError } from "../../errors/errorHandler.js";
+import { removeNullFields } from "../../utils/validate.util.js";
 import { safeString } from "../../utils/string.util.js";
 import { StyleImage } from "./styleImage.js";
 import { StyleItem } from "./styleItem.js";
@@ -7,6 +8,7 @@ import { StyleTag } from "./styleTag.js";
 export class Style {
   constructor({
     id,
+    thumbnail,
     title,
     nickname,
     content,
@@ -19,6 +21,7 @@ export class Style {
     curations,
   }) {
     this.id = id;
+    this.thumbnail = thumbnail;
     this.nickname = nickname;
     this.title = title;
     this.content = content;
@@ -45,6 +48,41 @@ export class Style {
       imageUrls: StyleImage.fromEntities(style.images),
       curations: style.curations,
     });
+  }
+  //갤러리 목록조회용
+  static fromListEntity(styleEntity) {
+    return new Style({
+      id: styleEntity.id.toString(),
+      thumbnail: safeString(styleEntity.images?.[0]?.path),
+      nickname: safeString(styleEntity.author),
+      title: safeString(styleEntity.title),
+      tags: styleEntity.tags.map((t) => t.tag.name),
+      categories: this.transformCategories(styleEntity.items),
+      content: safeString(styleEntity.description),
+      viewCount: styleEntity.views,
+      curationCount: styleEntity.curation_count,
+      createAt: styleEntity.created_at,
+    });
+  }
+
+  // 카테고리 변환 로직
+  static transformCategories(items) {
+    const categoryMap = {};
+    if (items) {
+      items.forEach((item) => {
+        const categoryKey = item.category.toLowerCase();
+        categoryMap[categoryKey] = {
+          name: safeString(item.item_name),
+          brand: safeString(item.brand_name),
+          price: item.price,
+        };
+      });
+    }
+    return categoryMap;
+  }
+  //null 속성 제거
+  toJSON() {
+    return removeNullFields(this);
   }
 }
 
@@ -106,20 +144,26 @@ export function validatePassword(password) {
   if (password.length < 8 || password.length > 20) {
     throw new BadRequestError("비밀번호는 8자 이상 20자 이하이어야 합니다.");
   }
-  if( /\s/.test(password)) {
+  if (/\s/.test(password)) {
     throw new BadRequestError("비밀번호는 공백을 포함할 수 없습니다.");
   }
-  if( !/[A-Z]/.test(password)) {
-    throw new BadRequestError("비밀번호는 최소 하나의 대문자를 포함해야 합니다.");
+  if (!/[A-Z]/.test(password)) {
+    throw new BadRequestError(
+      "비밀번호는 최소 하나의 대문자를 포함해야 합니다.",
+    );
   }
-  if( !/[a-z]/.test(password)) {
-    throw new BadRequestError("비밀번호는 최소 하나의 소문자를 포함해야 합니다.");
+  if (!/[a-z]/.test(password)) {
+    throw new BadRequestError(
+      "비밀번호는 최소 하나의 소문자를 포함해야 합니다.",
+    );
   }
-  if( !/[0-9]/.test(password)) {
+  if (!/[0-9]/.test(password)) {
     throw new BadRequestError("비밀번호는 최소 하나의 숫자를 포함해야 합니다.");
   }
-  if( !/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
-    throw new BadRequestError("비밀번호는 최소 하나의 특수문자를 포함해야 합니다.");
+  if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+    throw new BadRequestError(
+      "비밀번호는 최소 하나의 특수문자를 포함해야 합니다.",
+    );
   }
 }
 
@@ -130,7 +174,7 @@ export function validateViewCount(viewCount) {
   if (viewCount < 0) {
     throw new BadRequestError("조회수는 음수일 수 없습니다.");
   }
-  if( !Number.isInteger(viewCount)) {
+  if (!Number.isInteger(viewCount)) {
     throw new BadRequestError("조회수는 정수여야 합니다.");
   }
 }
@@ -142,7 +186,7 @@ export function validateCurationCount(curationCount) {
   if (curationCount < 0) {
     throw new BadRequestError("큐레이션 수는 음수일 수 없습니다.");
   }
-  if( !Number.isInteger(curationCount)) {
+  if (!Number.isInteger(curationCount)) {
     throw new BadRequestError("큐레이션 수는 정수여야 합니다.");
   }
 }
@@ -151,7 +195,7 @@ export function validateCurations(curations) {
   if (!Array.isArray(curations)) {
     throw new BadRequestError("큐레이션은 배열이어야 합니다.");
   }
-  if( curations.length === 0) {
+  if (curations.length === 0) {
     throw new BadRequestError("큐레이션은 최소 1개 이상이어야 합니다.");
   }
 }
@@ -166,10 +210,10 @@ export function validateTags(tags) {
   if (!Array.isArray(tags)) {
     throw new BadRequestError("태그는 배열이어야 합니다.");
   }
-  if( tags.length === 0) {
+  if (tags.length === 0) {
     throw new BadRequestError("태그는 최소 1개 이상이어야 합니다.");
   }
-  if( tags.length > 3) {
+  if (tags.length > 3) {
     throw new BadRequestError("태그는 최대 3개 이하이어야 합니다.");
   }
 }
@@ -178,19 +222,36 @@ export function validateImageUrls(imageUrls) {
   if (!Array.isArray(imageUrls)) {
     throw new BadRequestError("이미지 URL은 배열이어야 합니다.");
   }
-  if( imageUrls.length === 0) {
+  if (imageUrls.length === 0) {
     throw new BadRequestError("이미지 URL은 최소 1개 이상이어야 합니다.");
   }
-  if( imageUrls.length > 20) {
+  if (imageUrls.length > 20) {
     throw new BadRequestError("이미지 URL은 최대 20개 이하이어야 합니다.");
   }
 }
 
+// 페이지 번호만 검사
+export function validatePage(page) {
+  if (page === undefined || page === null) return;
+  const parsedPage = parseInt(page, 10);
+  if (isNaN(parsedPage) || parsedPage < 1) {
+    throw new BadRequestError("page는 1 이상의 숫자여야 합니다.");
+  }
+}
+//페이지 크기(limit)만 검사
 export function validateLimit(limit) {
-  if( isNaN(limit)) {
+  const parsedLimit = parseInt(limit, 10);
+  if (isNaN(parsedLimit)) {
     throw new BadRequestError("limit는 숫자여야 합니다.");
   }
-  if( limit <= 0) {
-    throw new BadRequestError("limit는 0보다 커야 합니다.");
+  if (parsedLimit <= 0 || parsedLimit > 30) {
+    throw new BadRequestError("limit는 1에서 30 사이여야 합니다.");
+  }
+}
+
+export function validateSortBy(sortBy) {
+  const validGallerySorts = ["latest", "mostViewed", "mostCurated"];
+  if (!validGallerySorts.includes(sortBy)) {
+    throw new BadRequestError(`잘못된 정렬 기준입니다: ${sortBy}`);
   }
 }
