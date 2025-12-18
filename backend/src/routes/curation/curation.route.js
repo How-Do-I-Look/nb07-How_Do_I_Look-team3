@@ -7,7 +7,10 @@ import {
 } from "../../services/curation/curation.service.js";
 import { createComment } from "../../services/comment/comment.service.js";
 import { Comment } from "../../classes/comment/comment.js";
+
 import { asyncHandler } from "../../utils/asyncHandler.js";
+import { CurationValidator } from "../../validators/curation.validator.js";
+import { Curation } from "../../classes/curation/curation.js";
 
 const router = express.Router();
 
@@ -29,13 +32,61 @@ router.route("/:curationId/comments").post(asyncHandler(async (req, res) => {
   res.status(200).json(comment);
 }));
 
-// 조회 (스타일 기준)
-router.get("/style/:styleId", asyncHandler(getCurations));
+// 조회, 등록
+router.route("/style/:styleId")
 
-// 등록
-router.post("/style/:styleId", asyncHandler(createCuration));
+.get(asyncHandler(async (req, res) => {
+
+  const { styleId } = req.params;
+  const {page = 1, pageSize = 10, searchBy, keyword,} = req.query;
+
+  CurationValidator.validateId(styleId);
+  CurationValidator.validateList( {styleId, page, pageSize, searchBy, keyword} );
+
+  const curation = await getCurations(styleId, page, pageSize, searchBy, keyword);
+
+  res.status(200).json(curation);
+}))
+
+.post(asyncHandler(async (req, res) => {
+
+  const { styleId } = req.params;
+  const { nickname, content, password, trendy, personality, practicality, costEffectiveness } = req.body;
+
+  CurationValidator.validateId(styleId);
+  CurationValidator.validateCreate( {styleId, nickname, content, password, trendy, personality, practicality, costEffectiveness} );
+
+  const curation = await createCuration(styleId, nickname, content, password, trendy, personality, practicality, costEffectiveness);
+
+  res.status(200).json(curation);
+}));
 
 // 수정, 삭제
-router.route("/:curationId").patch(updateCuration).delete(deleteCuration);
+router.route("/:curationId")
+
+.patch(asyncHandler(async (req, res) => {
+
+  const { curationId } = req.params;
+  const { nickname, content, password, trendy, personality, practicality, costEffectiveness } = req.body;
+
+  CurationValidator.validateId(curationId);
+  CurationValidator.validateUpdate( { password} );
+
+  const curation = await updateCuration(curationId, nickname, content, password, trendy, personality, practicality, costEffectiveness);
+
+  res.status(200).json(curation);
+}))
+
+.delete(asyncHandler(async (req, res) => {
+
+  const { curationId } = req.params;
+  const { password } = req.body;
+
+  CurationValidator.validateId(curationId);
+
+  const curation = await deleteCuration(curationId, password);
+
+  res.status(200).json({message: "큐레이팅 삭제 성공"});
+}));
 
 export default router;

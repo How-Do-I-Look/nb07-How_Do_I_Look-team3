@@ -58,8 +58,8 @@ export class CurationValidator {
 
 
   // 수정용 검증
-  static validateUpdate(body) {
-    if (!body.password) {
+  static validateUpdate(password) {
+    if (!password) {
       throw new BadRequestError();
     }
   }
