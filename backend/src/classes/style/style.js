@@ -1,6 +1,7 @@
 import { BadRequestError } from "../../errors/errorHandler.js";
 import { removeNullFields } from "../../utils/validate.util.js";
 import { safeString } from "../../utils/string.util.js";
+import { Curation } from "../curation/curation.js";
 import { StyleImage } from "./styleImage.js";
 import { StyleItem } from "./styleItem.js";
 import { StyleTag } from "./styleTag.js";
@@ -46,7 +47,7 @@ export class Style {
       categories: StyleItem.fromEntities(style.items),
       tags: StyleTag.fromEntities(style.tags),
       imageUrls: StyleImage.fromEntities(style.images),
-      curations: style.curations,
+      curations: Curation.fromEntityList(style.curations),
     });
   }
   //갤러리 목록조회용
