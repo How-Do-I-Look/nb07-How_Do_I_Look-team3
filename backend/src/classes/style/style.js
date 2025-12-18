@@ -241,3 +241,10 @@ export function validateSortBy(sortBy) {
     throw new BadRequestError(`잘못된 정렬 기준입니다: ${sortBy}`);
   }
 }
+
+export function validateSortBy(sortBy) {
+  const validGallerySorts = ["latest", "mostViewed", "mostCurated"];
+  if (!validGallerySorts.includes(sortBy)) {
+    throw new BadRequestError(`잘못된 정렬 기준입니다: ${sortBy}`);
+  }
+}

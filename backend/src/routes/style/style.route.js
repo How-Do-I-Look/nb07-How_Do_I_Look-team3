@@ -12,6 +12,7 @@ import {
   validateContent,
   validateImageUrls,
   validateNickname,
+  validatePage,
   validatePassword,
   validateSortBy,
   validateStyleId,
