@@ -1,0 +1,150 @@
+tags:
+  - name: Curations
+    description: 큐레이팅(평가/댓글) 관리 API
+paths:
+  /styles/{styleId}/curations:
+    post:
+      summary: 큐레이팅 등록
+      description: 특정 스타일에 대한 사용자 피드백과 4가지 항목(트렌디, 개성, 실용성, 가성비) 점수를 등록합니다
+      tags:
+        - Curations
+      parameters:
+        - in: path
+          name: styleId
+          required: true
+          schema:
+            type: integer
+          description: 큐레이팅 등록할 스타일의 고유 ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - nickname
+                - content
+                - password
+              properties:
+                nickname:
+                  type: string
+                  description:
+                content:
+                  type: string
+                  description:
+                password:
+                  type: string
+                  description:
+                trendy:
+                  type: integer
+                  minimun: 1
+                  maximum: 10
+                  description: 트렌디 점수 (1-10)
+                personality:
+                  type: integer
+                  minimun: 1
+                  maximum: 10
+                  description: 개성 점수 (1-10)
+                practicality:
+                  type: integer
+                  minimun: 1
+                  maximum: 10
+                  description: 실용성 점수 (1-10)
+                cistEffectiveness:
+                  type: integer
+                minimun: 1
+                maximum: 10
+                description: 가성비 점수 (1-10)
+        responses:
+          "200":
+            description: 큐레이팅 등록 성공
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      example: 123
+                    nickname:
+                      type: string
+                      example: "패피_K"
+                    content:
+                      type: string
+                      example: "전체적인 밸런스가 아주 좋네요!"
+                    trendy:
+                      type: integer
+                      example: 8
+                    personality:
+                      type: integer
+                      example: 7
+                    practicality:
+                      type: integer
+                      example: 9
+                    costEffectiveness:
+                      type: integer
+                      example: 10
+                    createAt:
+                      type: string
+                      format: date-time
+                      example: "2024-02-22T07:47:49.803Z"
+          "400":
+            description: 유효성 검사 실패
+  /curations/{curationId}:
+    put:
+      summary: 큐레이팅 수정
+      tags:
+        - Curations
+      parameters:
+        - in: path
+          name: curationId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type:
+      responses:
+        "200":
+          description: 큐레이팅 수정 성공
+        "400":
+          description: 잘못된 요청입니다
+        "403":
+          description: 비밀번호가 틀렸습니다
+        "404":
+          description: 존재하지 않습니다
+
+    delete:
+      summary: 큐레이팅 삭제
+      tags:
+        - Curations
+      parameters:
+        - in: path
+          name: curationId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                password:
+                  type: string
+                  description: 큐레이팅 비밀번호
+              required:
+                - password
+      responses:
+        "200":
+          description: 큐레이팅 삭제 성공
+        "400":
+          description: 잘못된 요청입니다
+        "403":
+          description: 비밀번호가 틀렸습니다
+        "404":
+          description: 존재하지 않습니다

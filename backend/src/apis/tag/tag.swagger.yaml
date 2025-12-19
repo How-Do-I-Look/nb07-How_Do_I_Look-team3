@@ -1,0 +1,23 @@
+tags:
+  - name: Tags
+    description: 태그 관리 API
+
+paths:
+  /tags:
+    get:
+      summary: 인기 태그 목록 조회
+      description: 스타일 게시글에서 가장 많이 사용된 상위 10개 태그를 조회
+      tags:
+        - Tags
+      responses:
+          "200":
+            description: 조회 성공
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    tags:
+                      type: array
+                      items:
+                        type: string

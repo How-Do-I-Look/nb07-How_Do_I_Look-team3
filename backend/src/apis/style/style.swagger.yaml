@@ -52,7 +52,51 @@ paths:
                     type: string
       responses:
         "201":
-          description: 스타일 생성 성공
+          description: 스타일 등록 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 1
+                  nickname:
+                    type: string
+                    example: "스타일러"
+                  title:
+                    type: string
+                    example: "오늘의 데일리룩"
+                  content:
+                    type: string
+                  password:
+                    type: string
+                    example: 12345Aa!
+                  categories:
+                    type: object
+                    properties:
+                      top:
+                        type: object
+                        properties:
+                          name: { type: string, example: "니트" }
+                          brand: { type: string, example: "무신사" }
+                          price: { type: integer, example: 35000 }
+                      bottom:
+                        type: object
+                        properties:
+                          name: { type: string, example: "슬랙스" }
+                          brand: { type: string, example: "보세" }
+                          price: { type: integer, example: 28000 }
+                  tags:
+                    type: array
+                    items:
+                      type: string
+                    example: ["데일리룩", "미니멀"]
+                  imageUrls:
+                    type: array
+                    items:
+                      type: string
+                    example: ["https://image1.png", "https://image2.png"]
         "400":
           description: 유효성 검사 실패
 
@@ -111,9 +155,71 @@ paths:
           description: 커서 기반 페이지네이션을 위한 커서값
       responses:
         "200":
-          description: 목록 조회 성공
+          description: 갤러리 목록 조회 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  currentPage: { type: integer }
+                  totalPages: { type: integer }
+                  totalItemCount: { type: integer }
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id: { type: string }
+                        thumbnail: { type: string }
+                        nickname: { type: string }
+                        title: { type: string }
+                        content: { type: string }
+                        viewCount: { type: integer }
+                        curationCount: { type: integer }
+                        createAt: { type: string, format: date-time }
+                        categories:
+                          type: object
+                          properties:
+                            top: { type: object, properties: { name: {type: string}, brand: {type: string}, price: {type: integer} } }
+                            bottom: { type: object, properties: { name: {type: string}, brand: {type: string}, price: {type: integer} } }
+                            outer: { type: object, properties: { name: {type: string}, brand: {type: string}, price: {type: integer} } }
+                            shoes: { type: object, properties: { name: {type: string}, brand: {type: string}, price: {type: integer} } }
+                            bag: { type: object, properties: { name: {type: string}, brand: {type: string}, price: {type: integer} } }
+                            accessory: { type: object, properties: { name: {type: string}, brand: {type: string}, price: {type: integer} } }
+                        tags:
+                          type: array
+                          items: { type: string }
+                cursor:
+                  type: object
+                  properties:
+                    hasNextPage: { type: boolean }
+                    nextCursor: { type: string, nullable: true }
+              example:
+                currentPage: 1
+                totalPages: 13
+                totalItemCount: 25
+                data:
+                  - id: "30"
+                    thumbnail: "https://dummyimage.com"
+                    nickname: "streetboy_92"
+                    title: "1111겨울 감성 스트릿핏 완성 더미데이zzzzz터"
+                    content: "도쿄 여행 중 편하게 돌아다닌 데일리룩입니다..."
+                    viewCount: 0
+                    curationCount: 0
+                    createAt: "2025-12-18T01:18:05.288Z"
+                    categories:
+                      top: { name: "워싱 로고 후디1", brand: "Stussy", price: 98000 }
+                      bottom: { name: "와이드 데님 팬츠2", brand: "Levis", price: 129000 }
+                      outer: { name: "리버시블 플리스 재킷", brand: "The North Face", price: 219000 }
+                      shoes: { name: "990v6 그레이", brand: "New Balance", price: 289000 }
+                      bag: { name: "크로스바디 메신저백", brand: "PORTER", price: 189000 }
+                      accessory: { name: "비니", brand: "Carhartt WIP", price: 39000 }
+                    tags: ["스트릿패션", "데일리룩"]
+                cursor:
+                  hasNextPage: true
+                  nextCursor: "eyJkYXRhIjp7ImlkIjoiMjkiLCJjcmVhdGVkX2F0IjoiMjAyNS0xMi0xOFQwMToxNzo1Mi4xMTVaIn0sInNvcnQiOltbImNyZWF0ZWRfYXQiLCJkZXNjIl0sWyJpZCIsImRlc2MiXV19"
         "400":
-          description: 잘못된 요청
+          description: 잘못된 요청입니다
   /styles/{styleId}:
     get:
       summary: 특정 스타일 상세 정보 조회
@@ -139,8 +245,93 @@ paths:
       responses:
         "200":
           description: 상세 정보 조회 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id: { type: string }
+                      nickname: { type: string }
+                      title: { type: string }
+                      content: { type: string }
+                      viewCount: { type: integer }
+                      curationCount: { type: integer }
+                      categories:
+                        type: object
+                        properties:
+                          top: { type: object, properties: { name: {type: string}, brand: {type: string}, price: {type: integer} } }
+                          bottom: { type: object, properties: { name: {type: string}, brand: {type: string}, price: {type: integer} } }
+                          outer: { type: object, properties: { name: {type: string}, brand: {type: string}, price: {type: integer} } }
+                          shoes: { type: object, properties: { name: {type: string}, brand: {type: string}, price: {type: integer} } }
+                          bag: { type: object, properties: { name: {type: string}, brand: {type: string}, price: {type: integer} } }
+                          accessory: { type: object, properties: { name: {type: string}, brand: {type: string}, price: {type: integer} } }
+                      tags:
+                        type: array
+                        items: { type: string }
+                      imageUrls:
+                        type: array
+                        items: { type: string }
+                      curations:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id: { type: string }
+                            nickname: { type: string }
+                            content: { type: string }
+                            trendy: { type: integer }
+                            personality: { type: integer }
+                            practicality: { type: integer }
+                            costEffectiveness: { type: integer }
+                            createAt: { type: string, format: date-time }
+                            reply:
+                              nullable: true
+                              type: object
+                              properties:
+                                id: { type: string }
+                                content: { type: string }
+                                createdAt: { type: string }
+                  lastElemCursor: { type: string, nullable: true }
+                  hasNext: { type: boolean, example: false }
+              example:
+                data:
+                  id: "21"
+                  nickname: "스트릿몬"
+                  title: "1111겨울 감성 스트릿핏 완성 더미데이zzzzz터"
+                  content: "asdfasdf확인용 도쿄 여행 중 편하게 돌아다닌 데일리룩입니다..."
+                  viewCount: 0
+                  curationCount: 2
+                  categories:
+                    top: { name: "워싱 로고 후디1", brand: "Stussy", price: 98000 }
+                    bottom: { name: "와이드 데님 팬츠2", brand: "Levis", price: 129000 }
+                    outer: { name: "리버시블 플리스 재킷", brand: "The North Face", price: 219000 }
+                    shoes: { name: "990v6 그레이", brand: "New Balance", price: 289000 }
+                    bag: { name: "크로스바디 메신저백", brand: "PORTER", price: 189000 }
+                    accessory: { name: "비니", brand: "Carhartt WIP", price: 39000 }
+                  tags: ["스트릿패션", "데일리룩"]
+                  imageUrls: ["https://dummyimage.com/look1", "https://dummyimage.com/look2"]
+                  curations:
+                    - id: "73"
+                      styleId: "21"
+                      nickname: "뷰어1"
+                      content: "트렌디한 느낌이 살아있네요!ㅋㅋㅋ"
+                      trendy: 9
+                      personality: 7
+                      practicality: 8
+                      costEffectiveness: 5
+                      createAt: "2025-12-16T00:42:54.066Z"
+                      updateAt: "2025-12-16T00:42:54.066Z"
+                      reply:
+                        id: "11"
+                        content: "스타일 작성자의 답글입니다. 감사합니다."
+                        createdAt: "2025-12-16T00:42:54.161Z"
+                lastElemCursor: null
+                hasNext: false
         "404":
-          description: 스타일을 찾을 수 없음
+          description: 존재하지 않습니다
 
     put:
       summary: 스타일 정보 수정
@@ -180,9 +371,65 @@ paths:
                     type: string
       responses:
         "200":
-          description: 수정 성공
+          description: 스타일 수정 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 1
+                  nickname:
+                    type: string
+                    example: "스타일러"
+                  title:
+                    type: string
+                    example: "수정된 데일리룩 제목"
+                  content:
+                    type: string
+                    example: "내용을 좀 더 자세하게 수정했습니다."
+                  viewCount:
+                    type: integer
+                    example: 150
+                  curationCount:
+                    type: integer
+                    example: 5
+                  createdAt:
+                    type: string
+                    format: date-time
+                    example: "2024-02-22T07:47:49.803Z"
+                  categories:
+                    type: object
+                    properties:
+                      top:
+                        type: object
+                        properties:
+                          name: { type: string, example: "니트" }
+                          brand: { type: string, example: "무신사" }
+                          price: { type: integer, example: 35000 }
+                      bottom:
+                        type: object
+                        properties:
+                          name: { type: string, example: "슬랙스" }
+                          brand: { type: string, example: "보세" }
+                          price: { type: integer, example: 28000 }
+                  tags:
+                    type: array
+                    items:
+                      type: string
+                    example: ["데일리룩", "수정완료"]
+                  imageUrls:
+                    type: array
+                    items:
+                      type: string
+                    example: ["https://image1.png", "https://image2.png"]
+        "400":
+          description: 잘못된 요청입니다
         "403":
-          description: 비밀번호 불일치
+          description: 비밀번호가 틀렸습니다
+        "404":
+          description: 존재하지 않습니다
 
     delete:
       summary: 스타일 삭제
@@ -208,6 +455,10 @@ paths:
                   description: 삭제 확인용 비밀번호
       responses:
         "200":
-          description: 스타일 삭제 성공 (메시지 반환)
+          description: 스타일 삭제 성공
+        "400":
+          description: 잘못된 요청입니다
         "403":
-          description: 비밀번호 불일치
+          description: 비밀번호가 틀렸습니다
+        "404":
+          description: 존재하지 않습니다

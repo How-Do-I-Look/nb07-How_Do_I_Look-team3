@@ -1,11 +1,11 @@
 tags:
   - name: Comments
-    description: 댓글 관리 API
+    description: 답글 관리 API
 paths:
   /curations/{curationId}/comments:
     post:
       summary: 답글 등록
-      description: 특정 큐레이션에 새로운 답글을 등록합니다
+      description: 특정 큐레이팅에 새로운 답글을 등록합니다
       tags:
         - Comments
       parameters:
@@ -14,7 +14,7 @@ paths:
           required: true
           schema:
             type: string
-            description: 답글을 작성할 대상 큐레이션 아이디
+            description: 답글을 작성할 대상 큐레이팅 아이디
       requestBody:
         required: true
         content:
@@ -34,6 +34,24 @@ paths:
       responses:
         "200":
           description: 답글 등록 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 10
+                  content:
+                    type: string
+                    example: "동감합니다! 정말 멋진 스타일이네요."
+                  nickname:
+                    type: string
+                    example: "댓글러"
+                  createdAt:
+                    type: string
+                    format: date-time
+                    example: "2024-02-22T10:00:00.000Z"
         "400":
           description: 유효성 검사 실패
   /comments/{commentId}:
@@ -64,13 +82,13 @@ paths:
                 - password
       responses:
         "200":
-          description: 수정 성공
+          description: 답글 수정 성공
         "400":
-          description: 잘못된 요청
+          description: 잘못된 요청입니다
         "403":
-          description: 비밀번호 불일치
+          description: 비밀번호가 틀렸습니다
         "404":
-          description: 답글을 찾을 수 없음
+          description: 존재하지 않습니다
 
     delete:
       summary: 답글 삭제
@@ -96,10 +114,10 @@ paths:
                 - password
       responses:
         "200":
-          description: 수정 성공
+          description: 답글 삭제 성공
         "400":
-          description: 잘못된 요청
+          description: 잘못된 요청입니다
         "403":
-          description: 비밀번호 불일치
+          description: 비밀번호가 틀렸습니다
         "404":
-          description: 답글을 찾을 수 없음
+          description: 존재하지 않습니다
