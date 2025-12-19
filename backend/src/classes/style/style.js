@@ -66,7 +66,7 @@ export class Style {
       content: safeString(styleEntity.description),
       viewCount: styleEntity.views,
       curationCount: styleEntity.curation_count,
-      createAt: styleEntity.created_at,
+      createdAt: styleEntity.created_at,
     });
   }
 
@@ -232,25 +232,6 @@ export function validateImageUrls(imageUrls) {
   }
   if (imageUrls.length > 20) {
     throw new BadRequestError("이미지 URL은 최대 20개 이하이어야 합니다.");
-  }
-}
-
-// 페이지 번호만 검사
-export function validatePage(page) {
-  if (page === undefined || page === null) return;
-  const parsedPage = parseInt(page, 10);
-  if (isNaN(parsedPage) || parsedPage < 1) {
-    throw new BadRequestError("page는 1 이상의 숫자여야 합니다.");
-  }
-}
-//페이지 크기(limit)만 검사
-export function validateLimit(limit) {
-  const parsedLimit = parseInt(limit, 10);
-  if (isNaN(parsedLimit)) {
-    throw new BadRequestError("limit는 숫자여야 합니다.");
-  }
-  if (parsedLimit <= 0 || parsedLimit > 30) {
-    throw new BadRequestError("limit는 1에서 30 사이여야 합니다.");
   }
 }
 
