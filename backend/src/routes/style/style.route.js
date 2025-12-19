@@ -11,9 +11,7 @@ import {
   validateCategories,
   validateContent,
   validateImageUrls,
-  validateLimit,
   validateNickname,
-  validatePage,
   validatePassword,
   validateSortBy,
   validateStyleId,
@@ -22,6 +20,10 @@ import {
 } from "../../classes/style/style.js";
 import { asyncHandler } from "../../utils/asyncHandler.js";
 import { defaultValue } from "../../utils/string.util.js";
+import {
+  validateLimit,
+  validatePage,
+} from "../../classes/pagination/pagination.js";
 
 const router = express.Router();
 

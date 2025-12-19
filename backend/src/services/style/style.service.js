@@ -551,8 +551,6 @@ export async function getGalleryStyles({
 
     // 커서 데이터를 기반으로 OR 조건 생성 (이전 페이지의 마지막 항목 이후를 찾음)
     cursorWhere = buildCursorWhere(cursorToken.data, sortArray);
-    //디버깅용
-    console.log("Cursor Where Clause:", cursorWhere);
   }
   //where 조건 병합 (검색/태그 필터와 커서 조건 병합)
   const finalWhere = {
@@ -590,16 +588,15 @@ export async function getGalleryStyles({
     nextCursor = createContinuationToken(lastItem, orderByToSort(orderBy));
   }
   const data = items.map((style) => Style.fromListEntity(style));
-  return {
-    currentPage,
-    totalPages,
-    totalItemCount,
-    data,
-    cursor: {
-      hasNextPage,
-      nextCursor,
-    },
+  const result = {
+    currentPage: currentPage,
+    totalPages: totalPages,
+    totalItemCount: totalItemCount,
+    data: data,
+    lastElemCursor: hasNextPage ? nextCursor : null,
+    hasNext: hasNextPage,
   };
+  return Pagenation.fromEntity(result);
 }
 
 export function calculateRating(params, rankBy) {
