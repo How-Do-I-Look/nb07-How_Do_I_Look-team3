@@ -1,4 +1,5 @@
 import { BadRequestError } from "../../errors/errorHandler.js";
+import { removeNullFields } from "../../utils/validate.util.js";
 import { safeString } from "../../utils/string.util.js";
 import { Curation } from "../curation/curation.js";
 import { StyleImage } from "./styleImage.js";
@@ -8,6 +9,7 @@ import { StyleTag } from "./styleTag.js";
 export class Style {
   constructor({
     id,
+    thumbnail,
     title,
     nickname,
     content,
@@ -21,6 +23,7 @@ export class Style {
     curations,
   }) {
     this.id = id;
+    this.thumbnail = thumbnail;
     this.nickname = nickname;
     this.title = title;
     this.content = content;
@@ -49,6 +52,41 @@ export class Style {
       imageUrls: StyleImage.fromEntities(style.images),
       curations: Curation.fromEntityList(style.curations),
     });
+  }
+  //갤러리 목록조회용
+  static fromListEntity(styleEntity) {
+    return new Style({
+      id: styleEntity.id.toString(),
+      thumbnail: safeString(styleEntity.images?.[0]?.path),
+      nickname: safeString(styleEntity.author),
+      title: safeString(styleEntity.title),
+      tags: styleEntity.tags.map((t) => t.tag.name),
+      categories: this.transformCategories(styleEntity.items),
+      content: safeString(styleEntity.description),
+      viewCount: styleEntity.views,
+      curationCount: styleEntity.curation_count,
+      createAt: styleEntity.created_at,
+    });
+  }
+
+  // 카테고리 변환 로직
+  static transformCategories(items) {
+    const categoryMap = {};
+    if (items) {
+      items.forEach((item) => {
+        const categoryKey = item.category.toLowerCase();
+        categoryMap[categoryKey] = {
+          name: safeString(item.item_name),
+          brand: safeString(item.brand_name),
+          price: item.price,
+        };
+      });
+    }
+    return categoryMap;
+  }
+  //null 속성 제거
+  toJSON() {
+    return removeNullFields(this);
   }
 }
 
@@ -196,11 +234,28 @@ export function validateImageUrls(imageUrls) {
   }
 }
 
+// 페이지 번호만 검사
+export function validatePage(page) {
+  if (page === undefined || page === null) return;
+  const parsedPage = parseInt(page, 10);
+  if (isNaN(parsedPage) || parsedPage < 1) {
+    throw new BadRequestError("page는 1 이상의 숫자여야 합니다.");
+  }
+}
+//페이지 크기(limit)만 검사
 export function validateLimit(limit) {
-  if (isNaN(limit)) {
+  const parsedLimit = parseInt(limit, 10);
+  if (isNaN(parsedLimit)) {
     throw new BadRequestError("limit는 숫자여야 합니다.");
   }
-  if (limit <= 0) {
-    throw new BadRequestError("limit는 0보다 커야 합니다.");
+  if (parsedLimit <= 0 || parsedLimit > 30) {
+    throw new BadRequestError("limit는 1에서 30 사이여야 합니다.");
+  }
+}
+
+export function validateSortBy(sortBy) {
+  const validGallerySorts = ["latest", "mostViewed", "mostCurated"];
+  if (!validGallerySorts.includes(sortBy)) {
+    throw new BadRequestError(`잘못된 정렬 기준입니다: ${sortBy}`);
   }
 }

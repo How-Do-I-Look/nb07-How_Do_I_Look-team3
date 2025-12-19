@@ -5,6 +5,7 @@ import {
   deleteStyle,
   updateStyle,
   detailFindStyle,
+  getGalleryStyles,
 } from "../../services/style/style.service.js";
 import {
   validateCategories,
@@ -12,44 +13,85 @@ import {
   validateImageUrls,
   validateLimit,
   validateNickname,
+  validatePage,
   validatePassword,
+  validateSortBy,
   validateStyleId,
   validateTags,
   validateTitle,
 } from "../../classes/style/style.js";
 import { asyncHandler } from "../../utils/asyncHandler.js";
+import { defaultValue } from "../../utils/string.util.js";
+
 const router = express.Router();
 
-router.route("/").post(
-  asyncHandler(async (req, res) => {
-    const {
-      nickname: author,
-      title,
-      content: description,
-      password,
-      categories: items,
-      tags,
-      imageUrls,
-    } = req.body;
-    validateNickname(author);
-    validateTitle(title);
-    validatePassword(password);
-    validateCategories(items);
-    validateTags(tags);
-    validateImageUrls(imageUrls);
+router
+  .route("/")
+  .post(
+    asyncHandler(async (req, res) => {
+      const {
+        nickname: author,
+        title,
+        content: description,
+        password,
+        categories: items,
+        tags,
+        imageUrls,
+      } = req.body;
+      validateNickname(author);
+      validateTitle(title);
+      validatePassword(password);
+      validateCategories(items);
+      validateTags(tags);
+      validateImageUrls(imageUrls);
 
-    const createdStyle = await createStyle(
-      author,
-      title,
-      description,
-      password,
-      items,
-      tags,
-      imageUrls,
-    );
-    res.status(201).json(createdStyle);
-  }),
-);
+      const createdStyle = await createStyle(
+        author,
+        title,
+        description,
+        password,
+        items,
+        tags,
+        imageUrls,
+      );
+      res.status(201).json(createdStyle);
+    }),
+  )
+  .get(
+    asyncHandler(async (req, res) => {
+      const {
+        limit = 16,
+        sortBy = "latest",
+        searchBy,
+        keyword,
+        tag,
+        cursor,
+        page,
+      } = req.query;
+
+      validatePage(page);
+      validateLimit(limit);
+      validateSortBy(sortBy);
+
+      // 페이지네이션 파라미터 파싱 및 기본값 설정
+      const parsedPage = parseInt(defaultValue(page, 1), 10);
+      const parsedlimit = parseInt(defaultValue(limit, 16), 10);
+
+      const queryParams = {
+        page: parsedPage,
+        limit: parsedlimit,
+        sortBy,
+        searchBy,
+        keyword,
+        tag,
+        cursor,
+      };
+
+      const result = await getGalleryStyles(queryParams);
+      return res.status(200).json(result);
+    }),
+  );
+
 router
   .route("/:styleId")
   .put(
