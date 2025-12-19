@@ -11,9 +11,8 @@ import {
 import { defaultValue } from "../../utils/string.util.js";
 import { safeNumber } from "../../utils/number.util.js";
 import { prisma } from "../../utils/prisma.js";
-
+import { safeString } from "../../utils/string.util.js";
 const HOST_NAME = process.env.DEV_HOST_NAME || "http://localhost:3000";
-
 /**
  * 새로운 스타일 생성
  * 스타일 정보, 연관된 이미지, 아이템, 태그를 같이 저장
@@ -26,6 +25,7 @@ const HOST_NAME = process.env.DEV_HOST_NAME || "http://localhost:3000";
  * @param {Array} imageUrls - 스타일 이미지
  * @returns {Style} - newStyle - 스타일 반환
  */
+
 export async function createStyle(
   nickname,
   title,
@@ -427,6 +427,7 @@ async function upsertTags(tr, tags, styleId) {
     }),
   );
 }
+
 function parseStyleImageUrl(imageUrls, styleId) {
   const styleImageData = imageUrls.map((imageUrl, index) => {
     const lastIndex = imageUrl.lastIndexOf("/");
@@ -448,7 +449,6 @@ function parseStyleImageUrl(imageUrls, styleId) {
  * @param {Object} query (limit, sortBy, searchBy, keyword, tag, cursor, page)
  * @returns {Object}  페이징 정보 및 가공된 스타일 목록 반환
  */
-
 //정렬 조건
 function getPrismaOrderByClause({ sortBy }) {
   const orderBy = [];
@@ -462,7 +462,6 @@ function getPrismaOrderByClause({ sortBy }) {
   }
   return orderBy; // 정렬 조건 반환
 }
-
 // DB 쿼리에 사용할 필터링 조건 (WHERE)을 생성
 function getPrismaWhereClause({ searchBy, keyword, tag }) {
   const whereConditions = {};
@@ -476,7 +475,6 @@ function getPrismaWhereClause({ searchBy, keyword, tag }) {
       },
     };
   }
-
   // 검색 조건
   if (keyword && searchBy) {
     const containsKeyword = { contains: keyword, mode: "insensitive" };
@@ -607,12 +605,6 @@ export async function getGalleryStyles({
   };
 }
 
-/**
- * 스타일 데이터의 평균 평점을 계산하고, 점수에 따른 순위(Ranking)를 부여합니다.
- * @param {Object} params - 스타일 목록이 포함된 객체 (랭킹 적용 전)
- * @param {string} rankBy - 정렬 기준 (trendy, personality, practicality, costEffectiveness, total)
- * @returns {Style[]} 평점 계산 및 랭킹이 부여되어 정렬된 스타일 배열
- */
 export function calculateRating(params, rankBy) {
   // 데이터가 없으면 빈 객체 반환
   if (!params || !params.data) return {};
@@ -626,12 +618,6 @@ export function calculateRating(params, rankBy) {
     .map((style) => {
       const curations = style.curations;
       const curationCount = curations.length;
-
-      // 스타일 랭킹 조회를 하는데
-
-      // 큐레이션이 없는 스타일도 보여줄거냐
-      // 안보여줄거냐
-
       const totalScores = curations.reduce(
         (sums, curation) => {
           return {
@@ -694,5 +680,6 @@ export function calculateRating(params, rankBy) {
   sorted.forEach((item, index) => {
     item.ranking = index + 1;
   });
+
   return sorted;
 }
