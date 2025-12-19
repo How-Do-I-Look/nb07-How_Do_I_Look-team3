@@ -1,9 +1,6 @@
 import { prisma } from "../../utils/prisma.js";
 import { NotFoundError, ForbiddenError, BadRequestError } from "../../errors/errorHandler.js";
-
-import { CurationValidator } from "../../validators/curation.validator.js";
 import { Curation } from "../../classes/curation/curation.js";
-import { urlencoded } from "express";
 
 /**
  * 큐레이팅 등록
@@ -32,7 +29,7 @@ return curation
 //조회
 export const getCurations = async (styleId, page, pageSize, searchBy, keyword) => {
   const skip = (page - 1) * pageSize;
-  console.log(styleId);
+
   // 검색 조건
   let curationWhere = {
     style_id: BigInt(styleId),
@@ -82,7 +79,7 @@ export const getCurations = async (styleId, page, pageSize, searchBy, keyword) =
         },
       },
     });
-    console.log(curations);
+
   const result = Curation.fromEntityList(curations);
   return {
     currentPage: Number(page),
