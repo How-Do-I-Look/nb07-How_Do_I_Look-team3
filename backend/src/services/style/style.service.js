@@ -298,23 +298,14 @@ export async function listStyleRanking(rankBy, cursor, take, page) {
     orderBy,
   });
 
-  const parsedEntities = entities.map((entity) => {
-    return {
-      id: entity.id,
-      thumbnail: entity?.imageUrls?.length > 0 ? entity.imageUrls[0] : null,
-      title: entity.title,
-      tags: entity.tags,
-      nickname: entity.author,
-      content: entity.description,
-      created_at: entity.created_at,
-      updated_at: entity.updated_at,
-      views: entity.views,
-      curation_count: entity.curation_count,
-      images: entity.images,
-      items: entity.items,
-      curations: entity.curations,
-    };
-  });
+  const parsedEntities = entities.map(
+    ({ images, author, description, ...entity }) => ({
+      ...entity,
+      thumbnail: images?.[0]?.path || null,
+      nickname: author,
+      content: description,
+    }),
+  );
 
   // 스타일 엔티티 적용
   const styles = {
@@ -352,8 +343,11 @@ export async function listStyleRanking(rankBy, cursor, take, page) {
         )
       : null;
 
-  //결과
+  const parsedStyles = items.map(
+    ({ content, imageUrls, curations, ...style }) => style,
+  );
 
+  //결과
   const result = {
     // 현재 페이지
     currentPage: page,
@@ -362,12 +356,13 @@ export async function listStyleRanking(rankBy, cursor, take, page) {
     // 스타일 전체 개수
     totalItemCount: totalStyleCount,
     // 스타일 목록(랭킹 계산되어 있음)
-    data: items,
+    data: parsedStyles,
     // 커서
     lastElemCursor: hasNext ? lastElemCursor : null,
     // 다음 페이지 유무
     hasNext: hasNext,
   };
+
   return Pagenation.fromEntity(result);
 }
 

@@ -40,6 +40,7 @@ export class Style {
   static fromEntity(style) {
     return new Style({
       id: safeString(style.id.toString()),
+      thumbnail: style.thumbnail,
       nickname: safeString(style.nickname),
       title: style.title,
       content: safeString(style.content),

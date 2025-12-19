@@ -1,6 +1,5 @@
 import { BadRequestError } from "../../errors/errorHandler.js";
 import { safeNumber } from "../../utils/number.util.js";
-import { safeString } from "../../utils/string.util.js";
 
 export class Pagenation {
   constructor({
