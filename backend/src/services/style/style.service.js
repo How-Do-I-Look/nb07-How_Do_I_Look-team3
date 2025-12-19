@@ -11,6 +11,7 @@ import {
 import { defaultValue } from "../../utils/string.util.js";
 import { safeNumber } from "../../utils/number.util.js";
 import { prisma } from "../../utils/prisma.js";
+import { Pagenation } from "../../classes/pagination/pagination.js";
 const HOST_NAME = process.env.DEV_HOST_NAME || "http://localhost:3000";
 /**
  * 새로운 스타일 생성
@@ -352,7 +353,8 @@ export async function listStyleRanking(rankBy, cursor, take, page) {
       : null;
 
   //결과
-  return {
+
+  const result = {
     // 현재 페이지
     currentPage: page,
     // 전체 페이지 개수
@@ -366,6 +368,7 @@ export async function listStyleRanking(rankBy, cursor, take, page) {
     // 다음 페이지 유무
     hasNext: hasNext,
   };
+  return Pagenation.fromEntity(result);
 }
 
 /**
