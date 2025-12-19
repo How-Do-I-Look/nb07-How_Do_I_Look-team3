@@ -15,7 +15,8 @@ export class Style {
     content,
     viewCount,
     curationCount,
-    createAt,
+    createdAt,
+    updatedAt,
     categories,
     tags,
     imageUrls,
@@ -28,7 +29,8 @@ export class Style {
     this.content = content;
     this.viewCount = viewCount;
     this.curationCount = curationCount;
-    this.createAt = createAt;
+    this.createdAt = createdAt;
+    this.updatedAt = updatedAt;
     this.categories = categories;
     this.tags = tags;
     this.imageUrls = imageUrls;
@@ -43,7 +45,8 @@ export class Style {
       content: safeString(style.content),
       viewCount: style.views,
       curationCount: style.curation_count,
-      createAt: style.create_at,
+      createdAt: style.created_at,
+      updatedAt: style.updated_at,
       categories: StyleItem.fromEntities(style.items),
       tags: StyleTag.fromEntities(style.tags),
       imageUrls: StyleImage.fromEntities(style.images),
