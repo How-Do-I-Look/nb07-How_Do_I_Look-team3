@@ -296,11 +296,32 @@ export async function listStyleRanking(rankBy, cursor, take, page) {
     },
     orderBy,
   });
+
+  const parsedEntities = entities.map((entity) => {
+    return {
+      id: entity.id,
+      thumbnail: entity?.imageUrls?.length > 0 ? entity.imageUrls[0] : null,
+      title: entity.title,
+      tags: entity.tags,
+      nickname: entity.author,
+      content: entity.description,
+      created_at: entity.created_at,
+      updated_at: entity.updated_at,
+      views: entity.views,
+      curation_count: entity.curation_count,
+      images: entity.images,
+      items: entity.items,
+      curations: entity.curations,
+    };
+  });
+
+  //console.log(entity.images);//created_at
   // 스타일 엔티티 적용
   const styles = {
-    data: entities.map((style) => Style.fromEntity(style)),
+    data: parsedEntities.map((style) => Style.fromEntity(style)),
   };
-
+  //console.log(styles);
+  //console.log(styles);
   // 스타일 목록에서 큐레이팅 점수를 기준으로 랭킹 계산
   const rankedData = calculateRating(styles, rankBy);
   // 전체 개수
