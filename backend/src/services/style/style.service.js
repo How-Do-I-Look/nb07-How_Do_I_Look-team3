@@ -10,6 +10,7 @@ import {
 } from "../../utils/pagination.util.js";
 import { safeNumber } from "../../utils/number.util.js";
 import { prisma } from "../../utils/prisma.js";
+import { safeString } from "../../utils/string.util.js";
 
 const HOST_NAME = process.env.DEV_HOST_NAME || "http://localhost:3000";
 
@@ -271,18 +272,8 @@ export async function detailFindStyle(styleId, cursor, take) {
 export async function listStyleRanking(rankBy, cursor, take, page) {
   const orderBy = [{ created_at: "desc" }, { id: "asc" }];
   const sort = orderByToSort(orderBy);
-  const baseWhere = {};
-  const cursorToken = parseContinuationToken(cursor);
-  const cursorWhere = cursorToken
-    ? buildCursorWhere(cursorToken.data, cursorToken.sort)
-    : {};
-  const stylesWhere =
-    Object.keys(cursorWhere).length > 0
-      ? { AND: [baseWhere, cursorWhere] }
-      : baseWhere;
-  const styles = await prisma.style.findMany({
-    where: stylesWhere,
-    take: take + 1,
+
+  const entities = await prisma.style.findMany({
     include: {
       images: {
         orderBy: { order: "desc" },
@@ -295,16 +286,49 @@ export async function listStyleRanking(rankBy, cursor, take, page) {
       },
       curations: true,
     },
+    orderBy,
   });
-  const result = {
-    currentPage: 1,
-    totalPages: 1,
-    totalItemCount: 50,
-    data: styles.map((style) => Style.fromEntity(style)),
+  const styles = {
+    data: entities.map((style) => Style.fromEntity(style)),
   };
-  const aa = calculateRating(result, rankBy);
+  const rankedData = calculateRating(styles, rankBy);
+  const totalStyleCount = rankedData.length;
 
-  return aa;
+  let startIndex = 0;
+  const cursorToken = parseContinuationToken(cursor);
+  if (cursorToken) {
+    console.log("커서있음");
+
+    const targetId = String(cursorToken.data?.id);
+    const foundIndex = rankedData.findIndex((item) => {
+      console.log(`${item.id} === ${targetId}`);
+      return item.id === targetId;
+    });
+    // 찾은 항목 바로 다음부터 시작
+    if (foundIndex !== -1) startIndex = foundIndex + 1;
+  }
+
+  const items = rankedData.slice(startIndex, startIndex + take);
+  const hasNext = startIndex + items.length < totalStyleCount;
+  const lastElemCursor =
+    hasNext && items.length > 0
+      ? createContinuationToken(
+          {
+            id: items[items.length - 1].id,
+            created_at: items[items.length - 1].created_at,
+          },
+          sort,
+        )
+      : null;
+
+  return {
+    currentPage: page,
+    totalPages: Math.ceil(totalStyleCount / take),
+    totalItemCount: totalStyleCount,
+    data: items,
+    lastElemCursor: hasNext ? lastElemCursor : null,
+    hasNext: hasNext,
+  };
 }
 
 /**
@@ -383,7 +407,7 @@ function parseStyleImageUrl(imageUrls, styleId) {
 
 export function calculateRating(params, rankBy) {
   if (!params || !params.data) return {};
-  console.log(`rankBy : ${rankBy}`);
+
   const styles = params.data.map((style) => {
     const curations = style.curations || [];
 
