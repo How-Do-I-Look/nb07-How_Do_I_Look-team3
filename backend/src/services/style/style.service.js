@@ -9,10 +9,10 @@ import {
   parseContinuationToken,
 } from "../../utils/pagination.util.js";
 import { defaultValue } from "../../utils/string.util.js";
+import { safeNumber } from "../../utils/number.util.js";
 import { prisma } from "../../utils/prisma.js";
-
+import { Pagenation } from "../../classes/pagination/pagination.js";
 const HOST_NAME = process.env.DEV_HOST_NAME || "http://localhost:3000";
-
 /**
  * 새로운 스타일 생성
  * 스타일 정보, 연관된 이미지, 아이템, 태그를 같이 저장
@@ -25,6 +25,7 @@ const HOST_NAME = process.env.DEV_HOST_NAME || "http://localhost:3000";
  * @param {Array} imageUrls - 스타일 이미지
  * @returns {Style} - newStyle - 스타일 반환
  */
+
 export async function createStyle(
   nickname,
   title,
@@ -269,6 +270,103 @@ export async function detailFindStyle(styleId, cursor, take) {
 }
 
 /**
+ * 스타일 랭킹 조회
+ * 스타일 전체 목록에서 랭킹 산출 후 정렬
+ * @param {String} rankBy - 조회 기준(total, trendy 등.....)
+ * @param {String} cursor - 페이징 처리 커서
+ * @param {Number} take - 페이지 개수
+ * @param {Number} page - 현재 페이지
+ * @returns {Style[]} - 랭킹 적용 된 스타일 목록
+ */
+export async function listStyleRanking(rankBy, cursor, take, page) {
+  const orderBy = [{ created_at: "desc" }, { id: "asc" }];
+  const sort = orderByToSort(orderBy);
+  //랭킹 계산을 위해 전체 목록 조회
+  const entities = await prisma.style.findMany({
+    include: {
+      images: {
+        orderBy: { order: "desc" },
+      },
+      items: true,
+      tags: {
+        include: {
+          tag: true,
+        },
+      },
+      curations: true,
+    },
+    orderBy,
+  });
+
+  const parsedEntities = entities.map(
+    ({ images, author, description, ...entity }) => ({
+      ...entity,
+      thumbnail: images?.[0]?.path || null,
+      nickname: author,
+      content: description,
+    }),
+  );
+
+  // 스타일 엔티티 적용
+  const styles = {
+    data: parsedEntities.map((style) => Style.fromEntity(style)),
+  };
+  // 스타일 목록에서 큐레이팅 점수를 기준으로 랭킹 계산
+  const rankedData = calculateRating(styles, rankBy);
+  // 전체 개수
+  const totalStyleCount = rankedData.length;
+
+  let startIndex = 0;
+
+  const cursorToken = parseContinuationToken(cursor);
+  if (cursorToken) {
+    const targetId = String(cursorToken.data?.id);
+    const foundIndex = rankedData.findIndex((item) => {
+      return item.id === targetId;
+    });
+    // 찾은 항목 바로 다음부터 시작
+    if (foundIndex !== -1) startIndex = foundIndex + 1;
+  }
+
+  const items = rankedData.slice(startIndex, startIndex + take);
+  const hasNext = startIndex + items.length < totalStyleCount;
+
+  //다음페이지 확인을 위한 커서 생성
+  const lastElemCursor =
+    hasNext && items.length > 0
+      ? createContinuationToken(
+          {
+            id: items[items.length - 1].id,
+            created_at: items[items.length - 1].created_at,
+          },
+          sort,
+        )
+      : null;
+
+  const parsedStyles = items.map(
+    ({ content, imageUrls, curations, ...style }) => style,
+  );
+
+  //결과
+  const result = {
+    // 현재 페이지
+    currentPage: page,
+    // 전체 페이지 개수
+    totalPages: Math.ceil(totalStyleCount / take),
+    // 스타일 전체 개수
+    totalItemCount: totalStyleCount,
+    // 스타일 목록(랭킹 계산되어 있음)
+    data: parsedStyles,
+    // 커서
+    lastElemCursor: hasNext ? lastElemCursor : null,
+    // 다음 페이지 유무
+    hasNext: hasNext,
+  };
+
+  return Pagenation.fromEntity(result);
+}
+
+/**
  * 스타일 이미지 등록
  * 처리 후 등록된 이미지의 경로를 반환함
  * @param {String} uploadFile - 업로드 이미지 경로
@@ -326,6 +424,7 @@ async function upsertTags(tr, tags, styleId) {
     }),
   );
 }
+
 function parseStyleImageUrl(imageUrls, styleId) {
   const styleImageData = imageUrls.map((imageUrl, index) => {
     const lastIndex = imageUrl.lastIndexOf("/");
@@ -347,7 +446,6 @@ function parseStyleImageUrl(imageUrls, styleId) {
  * @param {Object} query (limit, sortBy, searchBy, keyword, tag, cursor, page)
  * @returns {Object}  페이징 정보 및 가공된 스타일 목록 반환
  */
-
 //정렬 조건
 function getPrismaOrderByClause({ sortBy }) {
   const orderBy = [];
@@ -361,7 +459,6 @@ function getPrismaOrderByClause({ sortBy }) {
   }
   return orderBy; // 정렬 조건 반환
 }
-
 // DB 쿼리에 사용할 필터링 조건 (WHERE)을 생성
 function getPrismaWhereClause({ searchBy, keyword, tag }) {
   const whereConditions = {};
@@ -375,7 +472,6 @@ function getPrismaWhereClause({ searchBy, keyword, tag }) {
       },
     };
   }
-
   // 검색 조건
   if (keyword && searchBy) {
     const containsKeyword = { contains: keyword, mode: "insensitive" };
@@ -504,4 +600,83 @@ export async function getGalleryStyles({
       nextCursor,
     },
   };
+}
+
+export function calculateRating(params, rankBy) {
+  // 데이터가 없으면 빈 객체 반환
+  if (!params || !params.data) return {};
+
+  // 스타일마다 각각 큐레이팅 기준으로 평점 계산을 하기 위해 반복
+  const styles = params.data
+    .filter((style) => {
+      //스타일에 큐레이팅이 없다면 제외
+      return style.curations.length > 0;
+    })
+    .map((style) => {
+      const curations = style.curations;
+      const curationCount = curations.length;
+      const totalScores = curations.reduce(
+        (sums, curation) => {
+          return {
+            ...sums,
+            trendy: safeNumber(sums.trendy) + safeNumber(curation.trendy),
+            personality:
+              safeNumber(sums.personality) + safeNumber(curation.personality),
+            practicality:
+              safeNumber(sums.practicality) + safeNumber(curation.practicality),
+            costEffectiveness:
+              safeNumber(sums.costEffectiveness) +
+              safeNumber(curation.costEffectiveness),
+          };
+        },
+        {
+          // 초기값 설정
+          trendy: 0,
+          personality: 0,
+          practicality: 0,
+          costEffectiveness: 0,
+        },
+      );
+
+      const averages = {
+        trendy: safeNumber(totalScores.trendy) / curationCount,
+        personality: safeNumber(totalScores.personality) / curationCount,
+        practicality: safeNumber(totalScores.practicality) / curationCount,
+        costEffectiveness:
+          safeNumber(totalScores.costEffectiveness) / curationCount,
+      };
+
+      const totalAverage =
+        (averages.trendy +
+          averages.personality +
+          averages.practicality +
+          averages.costEffectiveness) /
+        4;
+      let average = 0;
+      if (rankBy === "total") {
+        average = safeNumber(totalAverage);
+      } else {
+        average =
+          averages[rankBy] !== undefined
+            ? safeNumber(averages[rankBy])
+            : safeNumber(totalAverage);
+      }
+      const styleRating = Math.round(average * 10) / 10;
+
+      return {
+        ...style,
+        ranking: null,
+        rating: styleRating,
+      };
+    });
+  const sorted = [...styles].sort((a, b) => {
+    if (b.rating !== a.rating) return b.rating - a.rating;
+
+    return Number(b.id) - Number(a.id);
+  });
+  sorted.forEach((item, index) => {
+    item.ranking = index + 1;
+  });
+
+  return sorted;
 }
