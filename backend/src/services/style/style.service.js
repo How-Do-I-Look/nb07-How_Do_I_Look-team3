@@ -11,7 +11,11 @@ import {
 import { defaultValue } from "../../utils/string.util.js";
 import { safeNumber } from "../../utils/number.util.js";
 import { prisma } from "../../utils/prisma.js";
+<<<<<<< HEAD
 import { safeString } from "../../utils/string.util.js";
+=======
+
+>>>>>>> 6338296 (feat:랭킹조회)
 const HOST_NAME = process.env.DEV_HOST_NAME || "http://localhost:3000";
 /**
  * 새로운 스타일 생성
