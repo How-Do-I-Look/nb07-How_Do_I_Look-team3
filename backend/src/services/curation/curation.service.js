@@ -9,7 +9,7 @@ import { Curation } from "../../classes/curation/curation.js";
 /**
  * 큐레이팅 등록
  */
-export const createCuration = async (
+export const createCurations = async (
   styleId,
   nickname,
   content,
