@@ -43,7 +43,7 @@ export const createComment = async (curationId, data) => {
   const reply = await prisma.reply.create({
     data: {
       curation_id: id,
-      author: style.author,
+      nickname: style.author,
       content: data.content,
       password: data.password,
     },

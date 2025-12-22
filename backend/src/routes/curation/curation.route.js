@@ -29,6 +29,9 @@ router.route("/:curationId/comments").post(
     res.status(200).json(comment);
   }),
 );
+import * as commentController from "../../controllers/comment/comment.controller.js";
+
+router.route("/:curationId/comments").post(commentController.postComment);
 
 // 수정, 삭제
 router

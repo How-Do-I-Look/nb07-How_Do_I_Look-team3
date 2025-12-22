@@ -1,5 +1,5 @@
-import { prisma } from "../../utils/prisma.js";
 import { Tag } from "../../classes/tag/tag.js";
+import { prisma } from "../../utils/prisma.js";
 
 export const getTags = async () => {
   const tags = await prisma.tag.findMany({
@@ -13,7 +13,7 @@ export const getTags = async () => {
   });
 
   const tagObjects = tags.map((tag) => new Tag(tag).name);
-  tagObjects.unshift("전체"); // 전체 태그를 맨 앞에 추가
+  // tagObjects.unshift("전체"); // 전체 태그를 맨 앞에 추가 (추가 필요 없음)
 
   return { tags: tagObjects };
 };

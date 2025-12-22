@@ -3,7 +3,7 @@ import { BadRequestError } from "../../errors/errorHandler.js";
 export class Comment {
   constructor(reply) {
     this.id = BigInt(reply.id);
-    this.nickname = reply.author;
+    this.nickname = reply.nickname;
     this.content = reply.content;
     this.createdAt = reply.created_at;
   }
