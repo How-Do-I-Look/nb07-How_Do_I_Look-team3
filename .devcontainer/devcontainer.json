@@ -11,16 +11,11 @@
     "vscode": {
       "extensions": [
         // VS Code Prettier 확장 (esbenp.prettier-vscode)
-        "esbenp.prettier-vscode"
+        "dbaeumer.vscode-eslint"
       ],
       "settings": {
         // 파일을 저장할 때 자동 포맷팅 활성화
-        "editor.formatOnSave": true,
-        // 기본 포맷터로 Prettier 설정
-        "editor.defaultFormatter": "esbenp.prettier-vscode",
-
-        // 💡 추가된 설정: Prettier 확장이 로컬이 아닌 글로벌 모듈을 찾도록 지시
-        "prettier.resolveGlobalModules": true
+        "editor.formatOnSave": true
       }
     }
   }
