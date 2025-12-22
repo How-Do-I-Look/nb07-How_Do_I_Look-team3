@@ -1,8 +1,8 @@
 import express from "express";
 import * as commentController from "../../controllers/comment/comment.controller.js";
-import * as curationController from "../../controllers/curation/curation.controller.js";
+import * as curationService from "../../services/curation/curation.service.js";
 
-const { updateCuration, deleteCuration } = curationController;
+const { updateCuration, deleteCuration } = curationService;
 
 const router = express.Router();
 
