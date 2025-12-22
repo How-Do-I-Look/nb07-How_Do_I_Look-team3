@@ -35,7 +35,7 @@ export const createCuration = async (
     },
   });
 
-  return curation;
+  return Curation.fromEntity(curation);
 };
 
 //조회
@@ -139,7 +139,7 @@ export const updateCuration = async (
     },
   });
 
-  return updated;
+  return Curation.fromEntity(updated);
 };
 
 /**
@@ -166,5 +166,5 @@ export const deleteCuration = async (curationId, password) => {
     where: { id: BigInt(curationId) },
   });
 
-  return Completion;
+  return Curation.fromEntity(Completion);
 };
