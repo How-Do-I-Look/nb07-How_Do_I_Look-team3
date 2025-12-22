@@ -1,5 +1,9 @@
 import { prisma } from "../../utils/prisma.js";
-import { NotFoundError, ForbiddenError, BadRequestError } from "../../errors/errorHandler.js";
+import {
+  NotFoundError,
+  ForbiddenError,
+  BadRequestError,
+} from "../../errors/errorHandler.js";
 import { Comment } from "../../classes/comment/comment.js";
 
 export const createComment = async (curationId, data) => {

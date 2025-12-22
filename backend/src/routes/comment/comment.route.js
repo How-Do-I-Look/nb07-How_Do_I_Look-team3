@@ -5,35 +5,40 @@ import { asyncHandler } from "../../utils/asyncHandler.js";
 
 const router = express.Router();
 
-router.route("/:commentId").put(asyncHandler(async (req, res) => {
-  // 답글 수정
-  const { commentId } = req.params;
-    Comment.validateId(commentId);
+router
+  .route("/:commentId")
+  .put(
+    asyncHandler(async (req, res) => {
+      // 답글 수정
+      const { commentId } = req.params;
+      Comment.validateId(commentId);
 
-    const { content, password } = req.body;
-    Comment.validateContent(content);
-    Comment.validatePassword(password);
+      const { content, password } = req.body;
+      Comment.validateContent(content);
+      Comment.validatePassword(password);
 
-    // DB 조회 후 수정
-    const comment = await commentService.updateComment(commentId, {
-      content,
-      password,
-    });
+      // DB 조회 후 수정
+      const comment = await commentService.updateComment(commentId, {
+        content,
+        password,
+      });
 
-    res.status(200).json(comment);
-}))
-.delete(asyncHandler(async (req, res) => {
-  // 답글 삭제
-  const { commentId } = req.params;
-  Comment.validateId(commentId);
+      res.status(200).json(comment);
+    }),
+  )
+  .delete(
+    asyncHandler(async (req, res) => {
+      // 답글 삭제
+      const { commentId } = req.params;
+      Comment.validateId(commentId);
 
-  const { password } = req.body;
-  Comment.validatePassword(password);
+      const { password } = req.body;
+      Comment.validatePassword(password);
 
-  // DB 조회 후 삭제
-  const result = await commentService.deleteComment(commentId, password);
+      // DB 조회 후 삭제
+      const result = await commentService.deleteComment(commentId, password);
 
-  res.status(200).json(result);
-}));
+      res.status(200).json(result);
+    }),
+  );
 export default router;
-

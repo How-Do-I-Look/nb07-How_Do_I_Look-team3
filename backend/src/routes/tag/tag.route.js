@@ -4,9 +4,11 @@ import * as tagService from "../../services/tag/tag.service.js";
 
 const router = express.Router();
 
-router.route("/").get(asyncHandler(async (_, res) => {
-  const tags = await tagService.getTags();
+router.route("/").get(
+  asyncHandler(async (_, res) => {
+    const tags = await tagService.getTags();
     res.status(200).json(tags);
-}));
+  }),
+);
 
 export default router;

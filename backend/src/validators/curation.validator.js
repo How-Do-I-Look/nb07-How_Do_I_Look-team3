@@ -8,10 +8,17 @@ export class CurationValidator {
     }
   }
 
-
   //등록용 검증
   static validateCreate(body) {
-    const { nickname, content, password, trendy, personality, practicality, costEffectiveness } = body;
+    const {
+      nickname,
+      content,
+      password,
+      trendy,
+      personality,
+      practicality,
+      costEffectiveness,
+    } = body;
 
     if (!nickname || !content || !password) {
       throw new BadRequestError();
@@ -28,7 +35,6 @@ export class CurationValidator {
 
   // 조회용 검증
   static validateList({ styleId, page, pageSize, searchBy, keyword }) {
-
     if (styleId === undefined) {
       throw new BadRequestError("styleId는 필수 입니다.");
     }
@@ -50,9 +56,7 @@ export class CurationValidator {
         throw new BadRequestError("searchBy가 올바르지 않습니다.");
       }
     }
-
   }
-
 
   // 수정용 검증
   static validateUpdate(password) {

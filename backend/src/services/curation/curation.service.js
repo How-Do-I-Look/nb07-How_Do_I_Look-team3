@@ -1,12 +1,24 @@
 import { prisma } from "../../utils/prisma.js";
-import { NotFoundError, ForbiddenError, BadRequestError } from "../../errors/errorHandler.js";
+import {
+  NotFoundError,
+  ForbiddenError,
+  BadRequestError,
+} from "../../errors/errorHandler.js";
 import { Curation } from "../../classes/curation/curation.js";
 
 /**
  * 큐레이팅 등록
  */
-export const createCuration = async (styleId, nickname, content, password, trendy, personality, practicality, costEffectiveness) => {
-
+export const createCuration = async (
+  styleId,
+  nickname,
+  content,
+  password,
+  trendy,
+  personality,
+  practicality,
+  costEffectiveness,
+) => {
   const curation = await prisma.curation.create({
     data: {
       nickname,
@@ -17,17 +29,23 @@ export const createCuration = async (styleId, nickname, content, password, trend
       practicality,
       costEffectiveness,
 
-    style: {
-      connect: { id: BigInt(styleId) },
+      style: {
+        connect: { id: BigInt(styleId) },
+      },
     },
-  },
-});
+  });
 
-return curation
+  return curation;
 };
 
 //조회
-export const getCurations = async (styleId, page, pageSize, searchBy, keyword) => {
+export const getCurations = async (
+  styleId,
+  page,
+  pageSize,
+  searchBy,
+  keyword,
+) => {
   const skip = (page - 1) * pageSize;
 
   // 검색 조건
@@ -35,17 +53,14 @@ export const getCurations = async (styleId, page, pageSize, searchBy, keyword) =
     style_id: BigInt(styleId),
   };
 
-
-  if(searchBy !== '' && keyword !== '') {
-    if(searchBy === 'nickname') {
+  if (searchBy !== "" && keyword !== "") {
+    if (searchBy === "nickname") {
       curationWhere.nickname = { contains: keyword };
     }
-    if(searchBy === "content") {
+    if (searchBy === "content") {
       curationWhere.content = { contains: keyword };
     }
   }
-
-
 
   if (searchBy && keyword) {
     if (searchBy === "nickname") {
@@ -55,46 +70,51 @@ export const getCurations = async (styleId, page, pageSize, searchBy, keyword) =
     if (searchBy === "content") {
       curationWhere.content = { contains: keyword };
     }
-
   }
 
-  const totalItemCount = await prisma.curation.count({ where :curationWhere });
+  const totalItemCount = await prisma.curation.count({ where: curationWhere });
   const totalPages = Math.ceil(totalItemCount / pageSize);
 
-
   const curations = await prisma.curation.findMany({
-      where :curationWhere,
-      skip: Number(skip),
-      take: Number(pageSize),
-      orderBy: { created_at: "desc" },
+    where: curationWhere,
+    skip: Number(skip),
+    take: Number(pageSize),
+    orderBy: { created_at: "desc" },
 
-      include: {
-        reply: {
-          select: {
-            id: true,
-            nickname: true,
-            content: true,
-            created_at: true,
-          },
+    include: {
+      reply: {
+        select: {
+          id: true,
+          nickname: true,
+          content: true,
+          created_at: true,
         },
       },
-    });
+    },
+  });
 
   const result = Curation.fromEntityList(curations);
   return {
     currentPage: Number(page),
     totalPages,
     totalItemCount,
-    data:result,
-  }
+    data: result,
+  };
 };
-
 
 /**
  * 큐레이팅 수정
  */
-export const updateCuration = async (curationId, nickname, content, password, trendy, personality, practicality, costEffectiveness) => {
-
+export const updateCuration = async (
+  curationId,
+  nickname,
+  content,
+  password,
+  trendy,
+  personality,
+  practicality,
+  costEffectiveness,
+) => {
   const curation = await prisma.curation.findUnique({
     where: { id: BigInt(curationId) },
   });
@@ -119,14 +139,13 @@ export const updateCuration = async (curationId, nickname, content, password, tr
     },
   });
 
-  return updated
+  return updated;
 };
 
 /**
  * 큐레이팅 삭제
  */
 export const deleteCuration = async (curationId, password) => {
-
   if (!password) {
     throw new BadRequestError();
   }
@@ -147,5 +166,5 @@ export const deleteCuration = async (curationId, password) => {
     where: { id: BigInt(curationId) },
   });
 
-  return Completion
+  return Completion;
 };
