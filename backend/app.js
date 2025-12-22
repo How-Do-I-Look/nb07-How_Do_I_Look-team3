@@ -6,7 +6,6 @@ import commentRouter from "./src/routes/comment/comment.route.js";
 import tagRouter from "./src/routes/tag/tag.route.js";
 import styleRouter from "./src/routes/style/style.route.js";
 import rankingRouter from "./src/routes/ranking/ranking.route.js";
-import commentRouter from "./src/routes/comment/comment.route.js";
 import { multerUtil as multer } from "./src/utils/multer.js";
 import { createStyleImage } from "./src/services/style/style.service.js";
 import { specs, swaggerUi } from "./src/utils/swagger.util.js";
