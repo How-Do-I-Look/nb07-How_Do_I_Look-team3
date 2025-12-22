@@ -1,31 +1,12 @@
 import express from "express";
-import {
-  updateCuration,
-  deleteCuration,
-} from "../../services/curation/curation.service.js";
-import { createComment } from "../../services/comment/comment.service.js";
-import { Comment } from "../../classes/comment/comment.js";
-import { asyncHandler } from "../../utils/asyncHandler.js";
+import * as commentController from "../../controllers/comment/comment.controller.js";
+import * as curationController from "../../controllers/curation/curation.controller.js";
+
+const { updateCuration, deleteCuration } = curationController;
 
 const router = express.Router();
 
-router.route("/:curationId/comments").post(asyncHandler(async (req, res) => {
-  // 답글 등록
-  const { curationId } = req.params;
-  Comment.validateId(curationId);
-
-  const { content, password } = req.body;
-  Comment.validateContent(content);
-  Comment.validatePassword(password);
-
-  // DB 조회 후 등록
-  const comment = await createComment(curationId, {
-    content,
-    password,
-  });
-
-  res.status(200).json(comment);
-}));
+router.route("/:curationId/comments").post(commentController.postComment);
 
 router.route("/:curationId").patch(updateCuration).delete(deleteCuration);
 

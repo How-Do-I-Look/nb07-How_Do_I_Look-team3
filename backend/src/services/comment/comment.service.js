@@ -1,6 +1,10 @@
-import { prisma } from "../../utils/prisma.js";
-import { NotFoundError, ForbiddenError, BadRequestError } from "../../errors/errorHandler.js";
 import { Comment } from "../../classes/comment/comment.js";
+import {
+  BadRequestError,
+  ForbiddenError,
+  NotFoundError,
+} from "../../errors/errorHandler.js";
+import { prisma } from "../../utils/prisma.js";
 
 export const createComment = async (curationId, data) => {
   const id = BigInt(curationId);
