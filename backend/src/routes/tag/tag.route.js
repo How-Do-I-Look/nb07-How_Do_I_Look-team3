@@ -1,12 +1,8 @@
 import express from "express";
-import { asyncHandler } from "../../utils/asyncHandler.js";
-import * as tagService from "../../services/tag/tag.service.js";
+import * as tagController from "../../controller/tag/tag.controller.js";
 
 const router = express.Router();
 
-router.route("/").get(asyncHandler(async (_, res) => {
-  const tags = await tagService.getTags();
-    res.status(200).json(tags);
-}));
+router.route("/").get(tagController.getTags);
 
 export default router;
