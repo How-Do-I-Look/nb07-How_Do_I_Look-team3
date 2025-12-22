@@ -21,3 +21,13 @@ paths:
                       type: array
                       items:
                         type: string
+                example:
+                  tags:
+                    - "전체"
+                    - "데일리룩"
+                    - "미니멀"
+                    - "가성비"
+                    - "스트릿"
+                    - "힙스터"
+                    - "스트릿패션"
+                    - "캐주얼"

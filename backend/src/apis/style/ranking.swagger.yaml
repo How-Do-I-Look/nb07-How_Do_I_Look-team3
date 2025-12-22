@@ -1,3 +1,112 @@
 tags:
   - name: Ranking
     description: 랭킹/정렬 관련 API
+
+paths:
+  /ranking:
+    get:
+      summary: 스타일 랭킹 목록 조회
+      tags:
+        - Ranking
+      parameters:
+        - name: rankBy
+          in: query
+          description: 랭킹 기준
+          required: false
+          schema:
+            type: string
+            default: total
+            enum:
+              - total
+              - trendy
+              - personality
+              - practical
+              - costEffective
+        - name: cursor
+          in: query
+          description: 다음 페이지를 가져오기 위한 커서 값
+          required: false
+          schema:
+            type: string
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 10
+      responses:
+        "200":
+          description: 랭킹 조회 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  currentPage: { type: integer }
+                  totalPages: { type: integer }
+                  totalItemCount: { type: integer }
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id: { type: string }
+                        thumbnail: { type: string }
+                        nickname: { type: string }
+                        title: { type: string }
+                        viewCount: { type: integer }
+                        curationCount: { type: integer }
+                        createdAt: { type: string, format: date-time }
+                        updateAt: { type: string, format: date-time }
+                        categories:
+                          type: object
+                          description: "스타일 아이템 구성 (top, bottom, outer, shoes 등)"
+                        tags:
+                          type: array
+                          items: { type: string }
+                        ranking: { type: integer }
+                        rating: { type: number, format: float }
+                  cursor:
+                    type: object
+                    properties:
+                      lastElemCursor: { type: string, nullable: true }
+                      hasNextPage: { type: boolean }
+              example:
+                currentPage: 1
+                totalPages: 2
+                totalItemCount: 15
+                data:
+                  - id: "14"
+                    thumbnail: "./public/images/001.jpg/style_image_14.jpg"
+                    nickname: "스트릿몬"
+                    title: "힙한 스트릿 패션의 정석"
+                    viewCount: 0
+                    curationCount: 2
+                    createdAt: "2025-12-15T08:42:19.652Z"
+                    updatedAt: "2025-12-17T03:51:15.738Z"
+                    categories:
+                      top: { name: "그래픽 후드티", brand: "Supreme", price: 90000 }
+                      bottom: { name: "카고 팬츠", brand: "Musinsa", price: 75000 }
+                      shoes: { name: "에어 포스", brand: "Nike", price: 130000 }
+                    tags: ["힙스터", "스트릿", "데일리룩"]
+                    ranking: 1
+                    rating: 7.5
+                  - id: "13"
+                    thumbnail: "./public/images/001.jpg/style_image_13.jpg"
+                    nickname: "패피_K"
+                    title: "미니멀리스트의 가을 아우터 코디"
+                    content: "깔끔한 트렌치코트를 활용한 가을 일상복 스타일"
+                    viewCount: 0
+                    curationCount: 2
+                    createdAt: "2025-12-15T08:42:18.681Z"
+                    categories:
+                      outer: { name: "오버핏 트렌치코트", brand: "Minimalist", price: 150000 }
+                      bottom: { name: "와이드 슬랙스", brand: "ZARA", price: 60000 }
+                    tags: ["데일리룩", "미니멀", "가성비"]
+                    ranking: 2
+                    rating: 7.2
+                cursor:
+                    type: object
+                    properties:
+                      lastElemCursor: "eyJpZCI6IjEzIn0="
+                      hasNextPage: true

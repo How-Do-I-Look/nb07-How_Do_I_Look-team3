@@ -9,8 +9,8 @@ paths:
       tags:
         - Comments
       parameters:
-        - in: path
-          name: curationId
+        - name: curationId
+          in: path
           required: true
           schema:
             type: string
@@ -40,28 +40,29 @@ paths:
                 type: object
                 properties:
                   id:
-                    type: integer
-                    example: 10
+                    type: string
                   content:
                     type: string
-                    example: "동감합니다! 정말 멋진 스타일이네요."
                   nickname:
                     type: string
-                    example: "댓글러"
                   createdAt:
                     type: string
                     format: date-time
-                    example: "2024-02-22T10:00:00.000Z"
+              example:
+                id: "10"
+                content: "동감합니다! 정말 멋진 스타일이네요."
+                nickname: "댓글러"
+                createdAt: "2025-12-19T10:00:00.000Z"
         "400":
-          description: 유효성 검사 실패
+          description: 잘못된 요청입니다
   /comments/{commentId}:
     put:
       summary: 답글 수정
       tags:
         - Comments
       parameters:
-        - in: path
-          name: commentId
+        - name: commentId
+          in: path
           required: true
           schema:
             type: string
@@ -83,6 +84,25 @@ paths:
       responses:
         "200":
           description: 답글 수정 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  nickname:
+                    type: string
+                  content:
+                    type: string
+                  createdAt:
+                    type: string
+                    format: date-time
+              example:
+                id: 123
+                nickname: "스타일러"
+                content: "수정된 답글 내용입니다."
+                createdAt: "2025-12-19T07:47:49.803Z"
         "400":
           description: 잘못된 요청입니다
         "403":
@@ -95,8 +115,8 @@ paths:
       tags:
         - Comments
       parameters:
-        - in: path
-          name: commentId
+        - name: commentI
+          in: path
           required: true
           schema:
             type: string
