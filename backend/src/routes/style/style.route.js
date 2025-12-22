@@ -18,7 +18,7 @@ import {
 } from "../../classes/style/style.js";
 import { asyncHandler } from "../../utils/asyncHandler.js";
 import { validateLimit } from "../../classes/pagination/pagination.js";
-import * as styleController from "../../controller/style/style.controller.js";
+import * as styleController from "../../controllers/style/style.controller.js";
 
 const router = express.Router();
 
