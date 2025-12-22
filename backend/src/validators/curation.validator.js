@@ -34,7 +34,7 @@ export class CurationValidator {
   }
 
   // 조회용 검증
-  static validateList({ styleId, page, pageSize, searchBy, keyword }) {
+  static validateList({ styleId, page, pageSize, searchBy }) {
     if (styleId === undefined) {
       throw new BadRequestError("styleId는 필수 입니다.");
     }
