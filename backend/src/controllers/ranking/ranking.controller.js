@@ -1,4 +1,4 @@
-import * as styleService from "../../services/style/style.service";
+import * as styleService from "../../services/style/style.service.js";
 import {
   validateLimit,
   validateRankBy,
