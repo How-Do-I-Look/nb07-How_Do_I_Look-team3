@@ -1,6 +1,10 @@
-import { prisma } from "../../utils/prisma.js";
-import { NotFoundError, ForbiddenError, BadRequestError } from "../../errors/errorHandler.js";
 import { Comment } from "../../classes/comment/comment.js";
+import {
+  BadRequestError,
+  ForbiddenError,
+  NotFoundError,
+} from "../../errors/errorHandler.js";
+import { prisma } from "../../utils/prisma.js";
 
 export const createComment = async (curationId, data) => {
   const id = BigInt(curationId);
@@ -39,7 +43,7 @@ export const createComment = async (curationId, data) => {
   const reply = await prisma.reply.create({
     data: {
       curation_id: id,
-      author: style.author,
+      nickname: style.author,
       content: data.content,
       password: data.password,
     },
