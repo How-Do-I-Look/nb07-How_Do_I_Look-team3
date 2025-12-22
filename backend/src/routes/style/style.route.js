@@ -5,7 +5,6 @@ import {
   deleteStyle,
   updateStyle,
   detailFindStyle,
-  getGalleryStyles,
 } from "../../services/style/style.service.js";
 import {
   validateCategories,
@@ -13,17 +12,13 @@ import {
   validateImageUrls,
   validateNickname,
   validatePassword,
-  validateSortBy,
   validateStyleId,
   validateTags,
   validateTitle,
 } from "../../classes/style/style.js";
 import { asyncHandler } from "../../utils/asyncHandler.js";
-import { defaultValue } from "../../utils/string.util.js";
-import {
-  validateLimit,
-  validatePage,
-} from "../../classes/pagination/pagination.js";
+import { validateLimit } from "../../classes/pagination/pagination.js";
+import * as styleController from "../../controller/style/style.controller.js";
 
 const router = express.Router();
 
@@ -59,40 +54,7 @@ router
       res.status(201).json(createdStyle);
     }),
   )
-  .get(
-    asyncHandler(async (req, res) => {
-      const {
-        limit = 16,
-        sortBy = "latest",
-        searchBy,
-        keyword,
-        tag,
-        cursor,
-        page,
-      } = req.query;
-
-      validatePage(page);
-      validateLimit(limit);
-      validateSortBy(sortBy);
-
-      // 페이지네이션 파라미터 파싱 및 기본값 설정
-      const parsedPage = parseInt(defaultValue(page, 1), 10);
-      const parsedlimit = parseInt(defaultValue(limit, 16), 10);
-
-      const queryParams = {
-        page: parsedPage,
-        limit: parsedlimit,
-        sortBy,
-        searchBy,
-        keyword,
-        tag,
-        cursor,
-      };
-
-      const result = await getGalleryStyles(queryParams);
-      return res.status(200).json(result);
-    }),
-  );
+  .get(asyncHandler(styleController.getGalleryList));
 
 router
   .route("/:styleId")
