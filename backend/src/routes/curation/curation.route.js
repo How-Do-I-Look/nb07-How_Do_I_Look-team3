@@ -9,6 +9,6 @@ router.route("/:curationId/comments").post(commentController.postComment);
 // 수정, 삭제
 router
   .route("/:curationId")
-  .patch(curationController.updateCuration)
+  .put(curationController.updateCuration)
   .delete(curationController.deleteCuration)
 export default router;
