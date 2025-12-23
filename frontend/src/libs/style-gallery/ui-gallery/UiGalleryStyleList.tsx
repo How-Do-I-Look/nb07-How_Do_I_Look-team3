@@ -36,7 +36,7 @@ type UiGalleryStyleListProps = {
 
 const UiGalleryStyleList = ({ styles }: UiGalleryStyleListProps) => {
 
-  if (dummyGalleryStyles.length === 0) return (
+  if (styles.length === 0) return (
     <div className={cx('emptyStyleWrapper')}>
       <EmptyData text='아직 스타일이 없어요' />
     </div>
@@ -44,7 +44,7 @@ const UiGalleryStyleList = ({ styles }: UiGalleryStyleListProps) => {
 
   return (
     <div className={cx('container')}>
-      {dummyGalleryStyles.map((style) => (
+      {styles.map((style) => (
         <GalleryCard card={style} key={style.id} />
       ))}
 
