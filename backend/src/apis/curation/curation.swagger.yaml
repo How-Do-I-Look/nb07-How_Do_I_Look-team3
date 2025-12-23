@@ -187,7 +187,7 @@ paths:
           description: 잘못된 요청입니다
 
   /curations/{curationId}:
-    put:
+    patch:
       summary: 큐레이팅 수정
       tags:
         - Curations
