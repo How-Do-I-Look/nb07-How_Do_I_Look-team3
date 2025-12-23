@@ -36,7 +36,9 @@ app.use("/comments", commentRouter);
 app.use("/tags", tagRouter);
 app.use("/curations", curationRouter);
 app.use("/styles", styleRouter);
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
+if (process.env.NODE_ENV !== "TEST") {
+  app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
+}
 app.use("/ranking", rankingRouter);
 app.post("/images", multer.single("image"), (req, res, next) => {
   try {
