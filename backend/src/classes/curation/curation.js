@@ -12,8 +12,8 @@ export class Curation {
     personality,
     practicality,
     costEffectiveness,
-    createAt,
-    updateAt,
+    createdAt,
+    updatedAt,
     reply,
   }) {
     this.id = id;
@@ -24,8 +24,8 @@ export class Curation {
     this.personality = personality;
     this.practicality = practicality;
     this.costEffectiveness = costEffectiveness;
-    this.createAt = createAt;
-    this.updateAt = updateAt;
+    this.createdAt = createdAt;
+    this.updatedAt = updatedAt;
     this.reply = reply;
   }
 
@@ -42,8 +42,8 @@ export class Curation {
       personality: data.personality,
       practicality: data.practicality,
       costEffectiveness: data.costEffectiveness,
-      createAt: data.created_at,
-      updateAt: data.updated_at,
+      createdAt: data.created_at,
+      updatedAt: data.updated_at,
       reply: data.reply ? new Comment(data.reply) : null,
     });
   }

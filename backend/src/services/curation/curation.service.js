@@ -120,7 +120,7 @@ export const updateCuration = async (
   });
 
   if (!curation) {
-    throw new NotFoundError();
+    throw new BadRequestError();
   }
 
   if (curation.password !== password) {
