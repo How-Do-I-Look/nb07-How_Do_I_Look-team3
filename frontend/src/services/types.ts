@@ -4,6 +4,7 @@ export type PaginationResponse<T> = {
   totalPages: number,
   totalItemCount: number
   data: T[],
+  lastElemCursor: string | null
 }
 
 export type CategoryValue = {
@@ -62,6 +63,7 @@ export type GalleryStylesSearchParams = {
   keyword: string
   tag: string
   page?: number
+  cursor?: string
 }
 
 export type RankingStylesSearchParams = {
