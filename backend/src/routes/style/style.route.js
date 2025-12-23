@@ -1,7 +1,7 @@
 import express from "express";
-import { styleController } from "../../controller/style/style.controller.js";
+import { styleController } from "../../controllers/style/style.controller.js";
 import { asyncHandler } from "../../utils/asyncHandler.js";
-import * as curationController from "../../controllers/curation.controller.js";
+import * as curationController from "../../controllers/curation/curation.controller.js";
 
 
 const router = express.Router();

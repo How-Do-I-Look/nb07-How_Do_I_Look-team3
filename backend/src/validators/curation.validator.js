@@ -1,5 +1,5 @@
 import { BadRequestError } from "../errors/errorHandler.js";
-
+import { isEmpty } from "../utils/string.util.js";
 export class CurationValidator {
   // 숫자인지 체크
   static validateId(id) {
@@ -41,14 +41,6 @@ export class CurationValidator {
 
     if (isNaN(Number(styleId))) {
       throw new BadRequestError("styleId는 숫자여야 합니다.");
-    }
-
-    if (keyword !== undefined) {
-      throw new BadRequestError("keyword는 필수 입니다.");
-    }
-
-    if (keyword !== String(keyword)) {
-      throw new BadRequestError("keyword는 글자여야 합니다.");
     }
 
     if (page !== undefined && isNaN(Number(page))) {
