@@ -154,9 +154,9 @@ export const postStyle = async (body: StyleFormInput): Promise<StyleDetail> => {
 }
 
 export const getStyle = async (styleId: number): Promise<StyleDetail> => {
-  const response = await fetch(`${BASE_URL}/styles/${styleId}`)
+  const response = await fetch(`${BASE_URL}/styles/${styleId}?cursor=1&limit=10`)
   const style = await response.json()
-  return style
+  return style.data
 }
 
 export const putStyle = async (styleId: number, body: StyleFormInput) => {
