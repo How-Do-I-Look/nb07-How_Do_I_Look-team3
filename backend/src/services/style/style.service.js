@@ -336,7 +336,7 @@ export async function listStyleRanking(rankBy, cursor, take, page) {
   let startIndex = Math.max(0,(Number(page) - 1) * take);
 
   const cursorToken = parseContinuationToken(cursor);
-  console.log(`cursorToken : ${cursorToken}`);
+ ;
   if (cursorToken) {
 
     const targetId = String(cursorToken.data?.id);
