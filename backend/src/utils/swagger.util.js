@@ -22,8 +22,8 @@ const options = {
     ],
     tags: [
       { name: "Styles", description: "스타일 갤러리 관리 API" },
-      { name: "Curations", description: "큐레이션(평가/댓글) 관리 API" },
-      { name: "Comments", description: "댓글 관리 API" },
+      { name: "Curations", description: "큐레이팅(평가/댓글) 관리 API" },
+      { name: "Comments", description: "답글 관리 API" },
       { name: "Tags", description: "태그 관리 API" },
       { name: "Ranking", description: "랭킹/정렬 관련 API" },
     ],
