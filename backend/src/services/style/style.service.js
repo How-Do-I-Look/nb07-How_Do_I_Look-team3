@@ -317,7 +317,6 @@ export async function listStyleRanking(rankBy, cursor, take, page) {
     const thumbnail = image?.path && image?.name
       ? `${image.path}/${image.name}`.replace(/([^:]\/)\/+/g, "$1")
       : '/public/images/style-dummy-image.jpg';
-
     return {
       ...entity,
       thumbnail,
