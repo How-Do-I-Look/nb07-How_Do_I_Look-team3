@@ -35,6 +35,11 @@ export const postComment = async (
     body: JSON.stringify(body),
   })
   const { comment } = await response.json()
+
+  if (!response.ok) {
+    throw new Error(comment.message)
+  }
+
   return { comment }
 }
 
