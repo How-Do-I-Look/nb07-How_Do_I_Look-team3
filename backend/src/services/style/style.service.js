@@ -199,6 +199,15 @@ export async function deleteStyle(styleId, password) {
  * @returns {Style} - 스타일 상세 내용 반환
  */
 export async function detailFindStyle(styleId, cursor, take) {
+  //조회수 증가 로직
+  await prisma.style.update({
+    where: { id: BigInt(styleId) },
+    data: {
+      views: {
+        increment: 1,
+      },
+    },
+  });
   const detailStyle = await prisma.style.findUnique({
     where: { id: BigInt(styleId) },
 
