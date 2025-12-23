@@ -146,16 +146,11 @@ export function validatePassword(password) {
   if (typeof password !== "string") {
     throw new BadRequestError("비밀번호는 문자열이어야 합니다.");
   }
-  if (password.length < 8 || password.length > 20) {
-    throw new BadRequestError("비밀번호는 8자 이상 20자 이하이어야 합니다.");
+  if (password.length < 8 || password.length > 16) {
+    throw new BadRequestError("비밀번호는 8자 이상 16자 이하이어야 합니다.");
   }
   if (/\s/.test(password)) {
     throw new BadRequestError("비밀번호는 공백을 포함할 수 없습니다.");
-  }
-  if (!/[A-Z]/.test(password)) {
-    throw new BadRequestError(
-      "비밀번호는 최소 하나의 대문자를 포함해야 합니다.",
-    );
   }
   if (!/[a-z]/.test(password)) {
     throw new BadRequestError(
@@ -164,11 +159,6 @@ export function validatePassword(password) {
   }
   if (!/[0-9]/.test(password)) {
     throw new BadRequestError("비밀번호는 최소 하나의 숫자를 포함해야 합니다.");
-  }
-  if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
-    throw new BadRequestError(
-      "비밀번호는 최소 하나의 특수문자를 포함해야 합니다.",
-    );
   }
 }
 
