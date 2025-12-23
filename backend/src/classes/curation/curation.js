@@ -14,7 +14,7 @@ export class Curation {
     costEffectiveness,
     createdAt,
     updatedAt,
-    reply,
+    comment,
   }) {
     this.id = id;
     this.styleId = styleId;
@@ -26,12 +26,12 @@ export class Curation {
     this.costEffectiveness = costEffectiveness;
     this.createdAt = createdAt;
     this.updatedAt = updatedAt;
-    this.reply = reply;
+    this.comment = comment;
   }
 
   static fromEntity(data) {
     const id = safeString(data.id);
-    const styleId = safeString(data.style_id);
+    const styleId = safeString(data.style_id ?? data.styleId);
     validationParameter(data);
     return new Curation({
       id: id,
@@ -44,7 +44,7 @@ export class Curation {
       costEffectiveness: data.costEffectiveness,
       createdAt: data.created_at,
       updatedAt: data.updated_at,
-      reply: data.reply ? new Comment(data.reply) : null,
+      comment: data.reply ? new Comment(data.reply) : null,
     });
   }
   static fromEntityList(entities) {
@@ -58,8 +58,8 @@ function validationParameter(data) {
     throw new BadRequestError("필수 입력 값이 누락되었습니다.");
   }
   if (!data.id) throw new BadRequestError("큐레이션 ID가 유효하지 않습니다.");
-  if (!data.style_id)
-    throw new BadRequestError("스타일 ID가 유효하지 않습니다.");
+  // if (!data.style_id)
+    // throw new BadRequestError("스타일 ID가 유효하지 않습니다.");
   if (!data.nickname) throw new BadRequestError("닉네임이 유효하지 않습니다.");
   if (!data.content) throw new BadRequestError("내용이 유효하지 않습니다.");
   if (data.trendy === null || data.trendy === undefined)
