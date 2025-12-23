@@ -1,10 +1,10 @@
-import { prisma } from "../../utils/prisma.js";
-import {
-  NotFoundError,
-  ForbiddenError,
-  BadRequestError,
-} from "../../errors/errorHandler.js";
 import { Curation } from "../../classes/curation/curation.js";
+import {
+  BadRequestError,
+  ForbiddenError,
+  NotFoundError,
+} from "../../errors/errorHandler.js";
+import { prisma } from "../../utils/prisma.js";
 
 /**
  * 큐레이팅 등록
@@ -19,21 +19,33 @@ export const createCurations = async (
   practicality,
   costEffectiveness,
 ) => {
-  const curation = await prisma.curation.create({
-    data: {
-      nickname,
-      content,
-      password,
-      trendy,
-      personality,
-      practicality,
-      costEffectiveness,
 
-      style: {
-        connect: { id: BigInt(styleId) },
+  const curation = await prisma.$transaction(async (tx) => {
+    const createCuration = await tx.curation.create({
+      data: {
+        style_id: BigInt(styleId),
+        nickname,
+        content,
+        password,
+        trendy,
+        personality,
+        practicality,
+        costEffectiveness,
       },
-    },
+    });
+
+    await tx.style.update({
+      where: { id: BigInt(styleId) },
+      data: {
+        curation_count: {
+          increment: 1,
+        },
+      },
+    });
+
+    return createCuration;
   });
+
 
   return Curation.fromEntity(curation);
 };
@@ -162,8 +174,21 @@ export const deleteCuration = async (curationId, password) => {
     throw new ForbiddenError();
   }
 
-  const Completion = await prisma.curation.delete({
-    where: { id: BigInt(curationId) },
+  const Completion = await prisma.$transaction(async (tx) => {
+    const deletedCuration = await tx.curation.delete({
+      where: { id: BigInt(curationId) },
+    });
+
+    await tx.style.update({
+      where: { id: deletedCuration.style_id },
+      data: {
+        curation_count: {
+          decrement: 1,
+        },
+      },
+    });
+
+    return deletedCuration;
   });
 
   return Curation.fromEntity(Completion);
