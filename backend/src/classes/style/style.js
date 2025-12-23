@@ -38,6 +38,7 @@ export class Style {
   }
 
   static fromEntity(style) {
+
     return new Style({
       id: safeString(style.id.toString()),
       thumbnail: style.thumbnail,
@@ -56,9 +57,10 @@ export class Style {
   }
   //갤러리 목록조회용
   static fromListEntity(styleEntity) {
+    const thumbnail = getThumbnail(styleEntity);
     return new Style({
       id: styleEntity.id.toString(),
-      thumbnail: safeString(styleEntity.images?.[0]?.path),
+      thumbnail: thumbnail,
       nickname: safeString(styleEntity.author),
       title: safeString(styleEntity.title),
       tags: styleEntity.tags.map((t) => t.tag.name),
@@ -230,4 +232,21 @@ export function validateSortBy(sortBy) {
   if (!validGallerySorts.includes(sortBy)) {
     throw new BadRequestError(`잘못된 정렬 기준입니다: ${sortBy}`);
   }
+}
+
+/**
+ * 스타일 엔티티에서 썸네일 URL을 추출하는 함수
+ * @param {Style} styleEntity - 스타일 객체
+ * @returns {string} - 최종 이미지 URL 경로
+ */
+function getThumbnail(styleEntity) {
+  const image = styleEntity.images?.[0];
+  console.log(image);
+  if (!image || !image.path || !image.name) {
+    // 이미지가 없을 때 보여줄 기본 이미지 경로
+    return '/public/images/style-dummy-image.jpg';
+  }
+  const thumbnail = `${image.path}/${image.name}`.replace(/([^:]\/)\/+/g, "$1");
+
+  return thumbnail;
 }
