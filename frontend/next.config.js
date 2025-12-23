@@ -22,6 +22,18 @@ module.exports = {
       {
         protocol: "https",
         hostname: "picsum.photos"
+      },
+      {
+        protocol: "http",
+        hostname: "img.com"
+      },
+      {
+        protocol: "https",
+        hostname: "dummyimage.com"
+      },
+      {
+        protocol: "https",
+        hostname: "i.postimg.cc"
       }
     ],
   },
