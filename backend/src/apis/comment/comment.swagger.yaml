@@ -115,7 +115,7 @@ paths:
       tags:
         - Comments
       parameters:
-        - name: commentI
+        - name: commentId
           in: path
           required: true
           schema:
