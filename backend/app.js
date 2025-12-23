@@ -21,11 +21,10 @@ app.use(
   cors({
     origin: "http://localhost:3001",
     credentials: true,
-    // 💡 허용 HTTP 메서드 명시
+    // 허용 HTTP 메서드 명시
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
   }),
 );
-const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 
@@ -52,6 +51,4 @@ app.post("/images", multer.single("image"), (req, res, next) => {
 
 app.use(errorHandler);
 
-app.listen(PORT, () => {
-  console.log("서버 실행 중");
-});
+export default app;

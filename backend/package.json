@@ -1,9 +1,11 @@
 {
   "type": "module",
   "scripts": {
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
+    "test:watch": "npm test -- --watchAll",
     "seed": "node ./seed.js",
-    "dev": "nodemon -e js,yaml app.js",
-    "start": "node ./app.js",
+    "dev": "nodemon -e js,yaml server.js",
+    "start": "node ./server.js",
     "build": "npm install && npx prisma db push && npx prisma generate"
   },
   "dependencies": {
@@ -25,9 +27,11 @@
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.4",
     "globals": "^16.5.0",
+    "jest": "^30.2.0",
     "nodemon": "^3.1.11",
     "prettier": "^3.7.4",
     "prisma": "^7.0.0",
+    "supertest": "^7.1.4",
     "ts-node": "^10.9.2"
   }
 }
