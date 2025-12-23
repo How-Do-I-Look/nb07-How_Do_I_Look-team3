@@ -156,33 +156,33 @@ paths:
                           nickname: { type: string }
                           content: { type: string }
                           createdAt: { type: string, format: date-time }
-            example:
-              currentPage: 1
-              totalPages: 5
-              totalItemCount: 50
-              data:
-                - id: 1
-                  nickname: "패션피플"
-                  content: "오 이 코디 진짜 힙하네요!"
-                  trendy: 9
-                  personality: 8
-                  practicality: 7
-                  costEffectiveness: 6
-                  createdAt: "2024-02-22T07:47:49.803Z"
-                  comment:
-                    id: 123
-                    nickname: "작성자"
-                    content: "감사합니다! 다음에 더 좋은 코디 가져올게요."
-                    createdAt: "2024-02-22T08:00:00.000Z"
-                - id: 2
-                  nickname: "미니멀리스트"
-                  content: "깔끔해서 따라입기 좋을 것 같아요."
-                  trendy: 7
-                  personality: 6
-                  practicality: 10
-                  costEffectiveness: 9
-                  createdAt: "2024-02-22T07:47:49.803Z"
-                  comment: {}
+              example:
+                currentPage: 1
+                totalPages: 5
+                totalItemCount: 50
+                data:
+                  - id: 1
+                    nickname: "패션피플"
+                    content: "오 이 코디 진짜 힙하네요!"
+                    trendy: 9
+                    personality: 8
+                    practicality: 7
+                    costEffectiveness: 6
+                    createdAt: "2024-02-22T07:47:49.803Z"
+                    comment:
+                      id: 123
+                      nickname: "작성자"
+                      content: "감사합니다! 다음에 더 좋은 코디 가져올게요."
+                      createdAt: "2024-02-22T08:00:00.000Z"
+                  - id: 2
+                    nickname: "미니멀리스트"
+                    content: "깔끔해서 따라입기 좋을 것 같아요."
+                    trendy: 7
+                    personality: 6
+                    practicality: 10
+                    costEffectiveness: 9
+                    createdAt: "2024-02-22T07:47:49.803Z"
+                    comment: {}
         "400":
           description: 잘못된 요청입니다
 
