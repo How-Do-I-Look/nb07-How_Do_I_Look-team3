@@ -6,7 +6,7 @@ import prettierConfig from "eslint-config-prettier";
 export default defineConfig([
   //ESLint가 검사할 파일 패턴
   {
-    files: ["./*.{js,mjs,cjs}", "**/*.{js,mjs,cjs}"],
+    files: ["./.{js,mjs,cjs}", "**/.{js,mjs,cjs}"],
     plugins: {
       js,
       prettier: prettierPlugin,

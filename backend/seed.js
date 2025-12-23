@@ -86,7 +86,6 @@ const curationReviews = [
   },
 ];
 
-
 async function main() {
   console.log("--- 시딩 시작 ---");
 
@@ -153,18 +152,17 @@ async function main() {
       const review = curationReviews[i];
 
       const newCuration = await prisma.curation.create({
-  data: {
-    style_id: newStyle.id,
-    nickname: review.nickname,
-    content: review.content,
-    password: DEFAULT_PASSWORD,
-    trendy: review.trendy,
-    personality: review.personality,
-    practicality: review.practicality,
-    costEffectiveness: review.costEffectiveness,
-  },
-});
-
+        data: {
+          style_id: newStyle.id,
+          nickname: review.nickname,
+          content: review.content,
+          password: DEFAULT_PASSWORD,
+          trendy: review.trendy,
+          personality: review.personality,
+          practicality: review.practicality,
+          costEffectiveness: review.costEffectiveness,
+        },
+      });
 
       // 첫 번째 큐레이팅에만 답글 추가
       // 큐레이팅에는 하나의 답글만 가능
@@ -174,7 +172,7 @@ async function main() {
             curation_id: newCuration.id,
             content: "스타일 작성자의 답글입니다. 감사합니다.",
             password: DEFAULT_PASSWORD, // 123
-             nickname: newStyle.author,
+            nickname: newStyle.author,
           },
         });
       }

@@ -1,114 +1,170 @@
 import { prisma } from "../../utils/prisma.js";
+import {
+  NotFoundError,
+  ForbiddenError,
+  BadRequestError,
+} from "../../errors/errorHandler.js";
+import { Curation } from "../../classes/curation/curation.js";
 
-// ✨ 큐레이팅 생성
-export async function createCuration(req, res) {
-  try {
-    const data = req.body;
+/**
+ * 큐레이팅 등록
+ */
+export const createCurations = async (
+  styleId,
+  nickname,
+  content,
+  password,
+  trendy,
+  personality,
+  practicality,
+  costEffectiveness,
+) => {
+  const curation = await prisma.curation.create({
+    data: {
+      nickname,
+      content,
+      password,
+      trendy,
+      personality,
+      practicality,
+      costEffectiveness,
 
-    const created = await prisma.curation.create({
-      data: {
-        style_id: BigInt(data.style_id),
-        author: data.author,
-        content: data.content,
-        password: data.password,
-        trendy: data.trendy ?? 0,
-        personality: data.personality ?? 0,
-        practicality: data.practicality ?? 0,
-        performance: data.performance ?? 0,
+      style: {
+        connect: { id: BigInt(styleId) },
       },
-    });
-    if (created) {
-      return res.status(200).json({ message: "생성이 완료되었습니다." });
-    } else {
-      return res.status(400).json({ message: "오류" });
+    },
+  });
+
+  return Curation.fromEntity(curation);
+};
+
+//조회
+export const getCurations = async (
+  styleId,
+  page,
+  pageSize,
+  searchBy,
+  keyword,
+) => {
+  const skip = (page - 1) * pageSize;
+
+  // 검색 조건
+  let curationWhere = {
+    style_id: BigInt(styleId),
+  };
+
+  if (searchBy !== "" && keyword !== "") {
+    if (searchBy === "nickname") {
+      curationWhere.nickname = { contains: keyword };
     }
-  } catch (err) {
-    throw new Error(err.message);
+    if (searchBy === "content") {
+      curationWhere.content = { contains: keyword };
+    }
   }
-}
 
-// ✨ 스타일의 큐레이팅 목록 조회
-export async function getCurations(req, res) {
-  try {
-    const styleId = 1;
-    const list = await prisma.curation.findMany({
-      where: { style_id: styleId },
-      include: { reply: true },
-      orderBy: { created_at: "desc" },
-    });
+  if (searchBy && keyword) {
+    if (searchBy === "nickname") {
+      curationWhere.nickname = { contains: keyword };
+    }
 
-    return res.json(list);
-  } catch (err) {
-    throw new Error(err.message);
+    if (searchBy === "content") {
+      curationWhere.content = { contains: keyword };
+    }
   }
-}
 
-// ✨ 큐레이팅 상세 조회
-export async function getCuration(req, res) {
-  try {
-    const id = 1;
+  const totalItemCount = await prisma.curation.count({ where: curationWhere });
+  const totalPages = Math.ceil(totalItemCount / pageSize);
 
-    const result = await prisma.curation.findUnique({
-      where: { id },
-      include: {
-        reply: true,
-        style: true,
+  const curations = await prisma.curation.findMany({
+    where: curationWhere,
+    skip: Number(skip),
+    take: Number(pageSize),
+    orderBy: { created_at: "desc" },
+
+    include: {
+      reply: {
+        select: {
+          id: true,
+          nickname: true,
+          content: true,
+          created_at: true,
+        },
       },
-    });
+    },
+  });
 
-    return res.status(200).json(result);
-  } catch (err) {
-    throw new Error(err.message);
+  const result = Curation.fromEntityList(curations);
+  return {
+    currentPage: Number(page),
+    totalPages,
+    totalItemCount,
+    data: result,
+  };
+};
+
+/**
+ * 큐레이팅 수정
+ */
+export const updateCuration = async (
+  curationId,
+  nickname,
+  content,
+  password,
+  trendy,
+  personality,
+  practicality,
+  costEffectiveness,
+) => {
+  const curation = await prisma.curation.findUnique({
+    where: { id: BigInt(curationId) },
+  });
+
+  if (!curation) {
+    throw new BadRequestError();
   }
-}
 
-// ✨ 큐레이팅 삭제
-export async function deleteCuration(req, res) {
-  try {
-    const id = 1;
-    const { password } = req.body;
-
-    const found = await prisma.curation.findUnique({
-      where: { id },
-    });
-
-    if (!found) return res.status(404).json({ message: "Curation Not Found" });
-
-    if (found.password !== password)
-      return res.status(403).json({ message: "Invalid Password" });
-
-    const deleted = await prisma.curation.delete({
-      where: { id },
-    });
-
-    return res.json(deleted);
-  } catch (err) {
-    throw new Error(err.message);
+  if (curation.password !== password) {
+    throw new ForbiddenError();
   }
-}
 
-// ✨ 큐레이팅 수정 (update)
-export async function updateCuration(req, res) {
-  try {
-    const id = 1;
-    const { password, content } = req.body;
+  const updated = await prisma.curation.update({
+    where: { id: BigInt(curationId) },
+    data: {
+      nickname,
+      content,
+      trendy,
+      personality,
+      practicality,
+      costEffectiveness,
+    },
+  });
 
-    const found = await prisma.curation.findUnique({
-      where: { id },
-    });
+  return Curation.fromEntity(updated);
+};
 
-    if (!found) return res.status(404).json({ message: "Curation Not Found" });
-
-    if (found.password !== password)
-      return res.status(403).json({ message: "Invalid Password" });
-
-    const updated = await prisma.curation.update({
-      where: { id },
-      data: { content },
-    });
-
-    return res.json(updated);
-  } catch (err) {
-    throw new Error(err.message);
+/**
+ * 큐레이팅 삭제
+ */
+export const deleteCuration = async (curationId, password) => {
+  if (!password) {
+    throw new BadRequestError();
   }
-}
+
+  const curation = await prisma.curation.findUnique({
+    where: { id: BigInt(curationId) },
+  });
+
+  if (!curation) {
+    throw new NotFoundError();
+  }
+
+  if (curation.password !== password) {
+    throw new ForbiddenError();
+  }
+
+  const Completion = await prisma.curation.delete({
+    where: { id: BigInt(curationId) },
+  });
+
+  return Curation.fromEntity(Completion);
+};

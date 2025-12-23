@@ -1,13 +1,14 @@
 import express from "express";
 import * as commentController from "../../controllers/comment/comment.controller.js";
-import * as curationService from "../../services/curation/curation.service.js";
-
-const { updateCuration, deleteCuration } = curationService;
+import * as curationController from "../../controllers/curation/curation.controller.js";
 
 const router = express.Router();
 
 router.route("/:curationId/comments").post(commentController.postComment);
 
-router.route("/:curationId").patch(updateCuration).delete(deleteCuration);
-
+// 수정, 삭제
+router
+  .route("/:curationId")
+  .patch(curationController.updateCuration)
+  .delete(curationController.deleteCuration)
 export default router;
