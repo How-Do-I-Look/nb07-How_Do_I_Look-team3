@@ -183,6 +183,11 @@ export const deleteStyle = async (
     body: JSON.stringify(body),
   })
   const { message } = await response.json()
+
+  if (!response.ok) {
+    throw new Error(message)
+  }
+
   return { message }
 }
 
