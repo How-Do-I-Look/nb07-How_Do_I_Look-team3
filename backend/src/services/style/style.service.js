@@ -308,13 +308,21 @@ export async function listStyleRanking(rankBy, cursor, take, page) {
   });
 
   const parsedEntities = entities.map(
-    ({ images, author, description, ...entity }) => ({
+  ({ images, author, description, ...entity }) => {
+    // 이미지 객체 추출
+    const image = images?.[0];
+
+    // 이미지 정보가 있을 때만 경로 결합 및 정규식 처리, 없으면 더미
+    const thumbnail = image?.path && image?.name
+      ? `${image.path}/${image.name}`.replace(/([^:]\/)\/+/g, "$1")
+      : '/public/images/style-dummy-image.jpg';
+    return {
       ...entity,
-      thumbnail: images?.[0]?.path || null,
+      thumbnail,
       nickname: author,
       content: description,
-    }),
-  );
+    };
+  });
 
   // 스타일 엔티티 적용
   const styles = {
