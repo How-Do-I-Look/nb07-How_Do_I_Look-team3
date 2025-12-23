@@ -1,3 +1,5 @@
+"use client";
+
 import classNames from 'classnames/bind'
 import styles from './RankingCard.module.scss'
 import { RankingStyle } from '@services/types'
@@ -5,6 +7,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import Icon from '../../shared/icon/Icon'
 import { STYLE_CATEGORY_TITLE_MAP } from '../../shared/util-constants/constants'
+import { useEffect, useState } from 'react'
 
 const cx = classNames.bind(styles)
 
@@ -16,16 +19,24 @@ const RankingCard = ({ card }: RankingCardProps) => {
   const { id, thumbnail, tags, title, nickname, viewCount: viewsCount, curationCount: curationsCount, categories, ranking, rating } = card
   const isCategoryEllipsis = Object.keys(categories).length > 2
 
+  const [imgSrc, setImgSrc] = useState(thumbnail);
+  const DUMMY_IMAGE = '/images/style-dummy-image.jpg';
+  useEffect(() => {
+    setImgSrc(thumbnail);
+  }, [thumbnail]);
   return (
     <div className={cx('container')}>
       <Link href={`/styles/${id}`} className={cx('imageWrapper')}>
         <Image
-          src={thumbnail}
+          src={imgSrc || DUMMY_IMAGE}
           alt="랭킹 카드 이미지"
           width={255}
           height={360}
           className={cx('image')}
           priority
+          onError={() => {
+            setImgSrc(DUMMY_IMAGE);
+          }}
         />
       </Link>
       <div className={cx('info')}>
