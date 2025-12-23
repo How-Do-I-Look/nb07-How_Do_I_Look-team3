@@ -5,6 +5,7 @@ import Image from 'next/image'
 import Icon from '../../shared/icon/Icon'
 import Link from 'next/link'
 import { STYLE_CATEGORY_TITLE_MAP } from '../../shared/util-constants/constants'
+import { useEffect, useState } from 'react'
 
 const cx = classNames.bind(styles)
 
@@ -17,16 +18,26 @@ const GalleryCard = ({ card }: GalleryCardProps) => {
   const { id, thumbnail, tags, title, content, nickname, viewCount: viewsCount, curationCount: curationsCount, categories } = card
   const isCategoryEllipsis = Object.keys(categories).length > 4
 
+  const [imgSrc, setImgSrc] = useState(thumbnail);
+  const DUMMY_IMAGE = '/images/style-dummy-image.jpg';
+
+  useEffect(() => {
+    setImgSrc(thumbnail);
+  }, [thumbnail]);
+
   return (
     <div className={cx('container')}>
       <Link href={`/styles/${id}`} className={cx('imageContainer', { isCategoryEllipsis })}>
         <Image
-          src={thumbnail}
+          src={imgSrc || DUMMY_IMAGE}
           alt="갤러리 카드 이미지"
           width={340}
           height={480}
           className={cx('image')}
           priority
+          onError={() => {
+            setImgSrc(DUMMY_IMAGE);
+          }}
         />
         <div className={cx('categories')}>
           {Object.entries(categories).map(([key, category], idx) => {
