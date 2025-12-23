@@ -15,9 +15,10 @@ type PaginationProps = {
   totalPages: number
   scroll?: boolean
   scrollId?: string
+  lastElemCursor?: string | null
 }
 
-const Pagination = ({ currentPage, totalPages, scroll = true, scrollId }: PaginationProps) => {
+const Pagination = ({ currentPage, totalPages, scroll = true, scrollId, lastElemCursor }: PaginationProps) => {
   const pageArray = getPageArray(currentPage, totalPages)
   const { updateQueryURL } = useUpdateQueryURL()
 
@@ -28,12 +29,20 @@ const Pagination = ({ currentPage, totalPages, scroll = true, scrollId }: Pagina
       </Link>
       {pageArray.map((pageNum) => {
         return (
-          <Link href={addScrollIdToURL(updateQueryURL({ 'page': pageNum }), scrollId)} key={pageNum} className={cx('button', { selected: currentPage === pageNum })} scroll={scroll}>
+          <Link href={addScrollIdToURL(updateQueryURL({
+            'page': pageNum,
+            'cursor':null
+            }), scrollId)} key={pageNum} className={cx('button', { selected: currentPage === pageNum })} scroll={scroll}>
             <span>{pageNum}</span>
           </Link>
         )
       })}
-      <Link href={addScrollIdToURL(updateQueryURL({ 'page': currentPage - 1 }), scrollId)} className={cx('arrow', 'button', { disabled: currentPage === totalPages })} scroll={scroll}>
+      <Link href={addScrollIdToURL(updateQueryURL({
+          'page': currentPage + 1,
+          'cursor' : lastElemCursor || null
+        }),
+        scrollId
+        )} className={cx('arrow', 'button', { disabled: currentPage === totalPages })} scroll={scroll}>
         <Icon name='arrow' width={8} height={8} alt='다음 페이지' />
       </Link>
     </div>

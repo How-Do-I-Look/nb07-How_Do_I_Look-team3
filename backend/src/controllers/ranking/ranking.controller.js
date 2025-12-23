@@ -5,14 +5,15 @@ import {
 } from "../../classes/ranking/ranking.js";
 class RankingController {
   async listStyleRanking(req, res) {
-    const { rankBy = "total", cursor, limit = 10 } = req.query;
+    const { rankBy = "total", cursor, limit = 10, page = 1 } = req.query;
     validateRankBy(rankBy);
     validateLimit(limit);
-
+console.log('Backend Controller - cursor:', cursor);
     const rankingStyles = await styleService.listStyleRanking(
       rankBy,
       cursor,
-      limit,
+      Number(limit),
+      Number(page)
     );
     res.status(200).json(rankingStyles);
   }
