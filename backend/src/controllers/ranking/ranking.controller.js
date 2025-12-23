@@ -8,7 +8,7 @@ class RankingController {
     const { rankBy = "total", cursor, limit = 10, page = 1 } = req.query;
     validateRankBy(rankBy);
     validateLimit(limit);
-console.log('Backend Controller - cursor:', cursor);
+
     const rankingStyles = await styleService.listStyleRanking(
       rankBy,
       cursor,
