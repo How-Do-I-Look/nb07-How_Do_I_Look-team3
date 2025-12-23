@@ -87,15 +87,15 @@ class StyleController {
   }
   async detailFindStyle(req, res) {
     const { styleId } = req.params;
-    const { cursor, limit } = req.query;
+    const { cursor, take = 10 } = req.query;
 
     validateStyleId(styleId);
-    validateLimit(limit);
-    const take = parseInt(limit, 10);
+    validateLimit(take);
+
     const detailStyle = await styleService.detailFindStyle(
       styleId,
       cursor,
-      take,
+      parseInt(take, 10),
     );
 
     res.status(200).json(detailStyle);

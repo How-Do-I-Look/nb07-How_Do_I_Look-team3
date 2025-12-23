@@ -572,7 +572,7 @@ export async function getGalleryStyles({
     where: finalWhere,
     orderBy: orderBy,
     include: {
-      images: { where: { order: 1 }, select: { path: true }, take: 1 },
+      images: { where: { order: 1 }, select: { path: true, name : true }, take: 1 },
       items: true,
       tags: { select: { tag: { select: { name: true } } } },
     },
