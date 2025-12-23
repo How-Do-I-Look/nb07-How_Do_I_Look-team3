@@ -23,7 +23,6 @@ paths:
                         type: string
                 example:
                   tags:
-                    - "전체"
                     - "데일리룩"
                     - "미니멀"
                     - "가성비"
