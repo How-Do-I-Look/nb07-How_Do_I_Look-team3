@@ -9,6 +9,7 @@ const getGalleryStyles = async ({
   keyword,
   tag,
   page = 1,
+  cursor,
 }: GalleryStylesSearchParams) => {
   const response = await getGalleryStylesApi({
     sortBy,
@@ -16,6 +17,7 @@ const getGalleryStyles = async ({
     keyword,
     tag,
     page,
+    cursor,
   })
   return response
 }

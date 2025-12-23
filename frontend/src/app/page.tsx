@@ -35,7 +35,7 @@ const HomePage = async ({ searchParams }: HomePageProps) => {
     SearchByStyle[searchByParam as keyof typeof SearchByStyle] ||
     SearchByStyle.nickname
 
-  const { data, currentPage, totalPages } = await getGalleryStyles({
+  const { data, currentPage, totalPages, lastElemCursor } = await getGalleryStyles({
     sortBy,
     searchBy,
     keyword,
@@ -62,6 +62,7 @@ const HomePage = async ({ searchParams }: HomePageProps) => {
         searchParams={{ sortBy, searchBy, keyword, tag, page: 1 }}
         initialStyles={data}
         initialHasNext={currentPage < totalPages}
+        initialCursor={lastElemCursor}
       />
     </MainLayout>
   )

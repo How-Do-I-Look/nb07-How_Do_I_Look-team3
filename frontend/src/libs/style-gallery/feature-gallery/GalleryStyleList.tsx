@@ -10,28 +10,45 @@ type GalleryStyleListProps = {
   searchParams: GalleryStylesSearchParams
   initialStyles: GalleryStyle[]
   initialHasNext: boolean
+  initialCursor: string | null
 }
 
-const GalleryStyleList = ({ searchParams, initialStyles, initialHasNext }: GalleryStyleListProps) => {
+const GalleryStyleList = ({ searchParams, initialStyles, initialHasNext, initialCursor }: GalleryStyleListProps) => {
   const [styles, setStyles] = useState(initialStyles)
   const [page, setPage] = useState(1)
   const [hasNext, setHasNext] = useState(initialHasNext)
+  const [cursor, setCursor] = useState(initialCursor)
 
   const loadMoreStyles = async () => {
     const newPage = page + 1
-    const { data: newStyles, currentPage, totalPages } = await getGalleryStyles({ ...searchParams, page: newPage })
+    const { data: newStyles, currentPage, totalPages, lastElemCursor } = await getGalleryStyles({
+      ...searchParams,
+      page: newPage,
+      cursor: cursor ?? undefined,
+    })
 
     setStyles((prevStyles) => [...prevStyles, ...newStyles])
     setPage(newPage)
     setHasNext(currentPage < totalPages)
+    setCursor(lastElemCursor)
   }
-  const ref = useIntersect(() => { if (hasNext) loadMoreStyles() }, { rootMargin: '0px 0px 500px' })
+  const ref = useIntersect(
+    async (entry, observer) => {
+      observer.unobserve(entry.target)
+      if (hasNext) {
+        await loadMoreStyles()
+        observer.observe(entry.target)
+      }
+    },
+    { rootMargin: '0px 0px 500px' },
+  )
 
   useEffect(() => {
     setStyles(initialStyles)
     setHasNext(initialHasNext)
     setPage(1)
-  }, [initialStyles, initialHasNext])
+    setCursor(initialCursor)
+  }, [initialStyles, initialHasNext, initialCursor])
 
   return (
     <>

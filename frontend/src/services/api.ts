@@ -98,9 +98,9 @@ export const getCuratings = async (
       next: { tags: ['curatings'] },
     },
   )
-  const { currentPage, totalPages, totalItemCount, data } =
+  const { currentPage, totalPages, totalItemCount, data, lastElemCursor } =
     await response.json()
-  return { currentPage, totalPages, totalItemCount, data }
+  return { currentPage, totalPages, totalItemCount, data, lastElemCursor }
 }
 
 export const putCurating = async (
@@ -206,14 +206,17 @@ export const getGalleryStyles = async (
   urlParams.set('tag', params.tag)
   urlParams.set('page', params.page?.toString() ?? '1')
   urlParams.set('pageSize', GALLERY_STYLES_PAGE_SIZE.toString())
+  if (params.cursor) {
+    urlParams.set('cursor', params.cursor)
+  }
   const query = urlParams.toString()
 
   const response = await fetch(`${BASE_URL}/styles?${query}`, {
     next: { tags: ['galleryStyles'] },
   })
-  const { currentPage, totalPages, totalItemCount, data } =
+  const { currentPage, totalPages, totalItemCount, data, lastElemCursor } =
     await response.json()
-  return { currentPage, totalPages, totalItemCount, data }
+  return { currentPage, totalPages, totalItemCount, data, lastElemCursor }
 }
 
 export const getGalleryTags = async () => {
@@ -236,7 +239,7 @@ export const getRankingStyles = async (
   const response = await fetch(`${BASE_URL}/ranking?${query}`, {
     next: { tags: ['rankingStyles'] },
   })
-  const { currentPage, totalPages, totalItemCount, data } =
+  const { currentPage, totalPages, totalItemCount, data, lastElemCursor } =
     await response.json()
-  return { currentPage, totalPages, totalItemCount, data }
+  return { currentPage, totalPages, totalItemCount, data, lastElemCursor }
 }
