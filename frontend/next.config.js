@@ -14,6 +14,7 @@ module.exports = {
         protocol: "http",
         hostname: "localhost",
         port: "3000",
+        pathname: '/public/**',
       },
       {
         protocol: "https",
@@ -24,15 +25,15 @@ module.exports = {
         hostname: "picsum.photos"
       },
       {
-        protocol: "http",
+         protocol: "http",
         hostname: "img.com"
       },
       {
-        protocol: "https",
+         protocol: "https",
         hostname: "dummyimage.com"
       },
       {
-        protocol: "https",
+         protocol: "https",
         hostname: "i.postimg.cc"
       }
     ],
