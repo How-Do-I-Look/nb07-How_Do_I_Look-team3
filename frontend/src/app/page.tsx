@@ -55,7 +55,7 @@ const HomePage = async ({ searchParams }: HomePageProps) => {
         </Link>
       </div>
       <div className={cx('headerBottom')}>
-        {/* <TagList /> */}
+        <TagList />
         <StyleSort currentSortBy={sortBy} />
       </div>
       <GalleryStyleList
