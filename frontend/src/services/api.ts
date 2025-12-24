@@ -51,6 +51,9 @@ export const putComment = async (commentId: number, body: CommentFormInput) => {
     },
     body: JSON.stringify(body),
   })
+  if (!response.ok) {
+    throw new Error('큐레이팅 수정에 실패했습니다.')
+  }
   const data = await response.json()
   return data
 }
@@ -66,6 +69,9 @@ export const deleteComment = async (
     },
     body: JSON.stringify(body),
   })
+  if (!response.ok) {
+    throw new Error('큐레이팅 삭제에 실패했습니다.')
+  }
   const data = await response.json()
   return data
 }
@@ -114,6 +120,9 @@ export const putCurating = async (
     },
     body: JSON.stringify(body),
   })
+  if (!response.ok) {
+    throw new Error('큐레이팅 수정 요청에 실패했습니다.')
+  }
   const data = await response.json()
   return data
 }
@@ -129,7 +138,11 @@ export const deleteCurating = async (
     },
     body: JSON.stringify(body),
   })
+  if (!response.ok) {
+    throw new Error('큐레이팅 삭제 요청에 실패했습니다.')
+  }
   const data = await response.json()
+
   return data
 }
 
@@ -172,6 +185,9 @@ export const putStyle = async (styleId: number, body: StyleFormInput) => {
     },
     body: JSON.stringify(body),
   })
+  if (!response.ok) {
+    throw new Error('스타일 수정 요청에 실패했습니다.')
+  }
   const data = await response.json()
   return data
 }

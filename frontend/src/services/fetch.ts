@@ -2,6 +2,10 @@ const logError = async (response: Response) => {
   if (!response.ok) {
     const data = await response.clone().json()
     console.error(`[프론트] ${response.url} ${response.status}`, data)
+    throw Error(
+      typeof data === 'string' ?
+      data : data?.message || '요청 처리 중 오류가 발생했습니다.'
+    );
   }
 }
 
