@@ -1,0 +1,22 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/typescript-node
+{
+  "name": "Node.js & TypeScript",
+  "image": "mcr.microsoft.com/devcontainers/typescript-node:1-22-bookworm",
+
+  // Prettier 패키지를 컨테이너에 '글로벌'로 설치합니다.
+  "postCreateCommand": "npm install -g prettier",
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        // VS Code Prettier 확장 (esbenp.prettier-vscode)
+        "dbaeumer.vscode-eslint"
+      ],
+      "settings": {
+        // 파일을 저장할 때 자동 포맷팅 활성화
+        "editor.formatOnSave": true
+      }
+    }
+  }
+}

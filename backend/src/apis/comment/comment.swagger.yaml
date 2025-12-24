@@ -1,0 +1,143 @@
+tags:
+  - name: Comments
+    description: 답글 관리 API
+paths:
+  /curations/{curationId}/comments:
+    post:
+      summary: 답글 등록
+      description: 특정 큐레이팅에 새로운 답글을 등록합니다
+      tags:
+        - Comments
+      parameters:
+        - name: curationId
+          in: path
+          required: true
+          schema:
+            type: string
+            description: 답글을 작성할 대상 큐레이팅 아이디
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - content
+                - password
+              properties:
+                content:
+                  type: string
+                  description: 답글 내용
+                password:
+                  type: string
+                  description: 답글 수정을 위한 비밀번호
+      responses:
+        "200":
+          description: 답글 등록 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  content:
+                    type: string
+                  nickname:
+                    type: string
+                  createdAt:
+                    type: string
+                    format: date-time
+              example:
+                id: "10"
+                content: "동감합니다! 정말 멋진 스타일이네요."
+                nickname: "댓글러"
+                createdAt: "2025-12-19T10:00:00.000Z"
+        "400":
+          description: 잘못된 요청입니다
+  /comments/{commentId}:
+    put:
+      summary: 답글 수정
+      tags:
+        - Comments
+      parameters:
+        - name: commentId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                content:
+                  type: string
+                password:
+                  type: string
+                  description: 답글 비밀번호
+              required:
+                - content
+                - password
+      responses:
+        "200":
+          description: 답글 수정 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  nickname:
+                    type: string
+                  content:
+                    type: string
+                  createdAt:
+                    type: string
+                    format: date-time
+              example:
+                id: 123
+                nickname: "스타일러"
+                content: "수정된 답글 내용입니다."
+                createdAt: "2025-12-19T07:47:49.803Z"
+        "400":
+          description: 잘못된 요청입니다
+        "403":
+          description: 비밀번호가 틀렸습니다
+        "404":
+          description: 존재하지 않습니다
+
+    delete:
+      summary: 답글 삭제
+      tags:
+        - Comments
+      parameters:
+        - name: commentId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                password:
+                  type: string
+                  description: 답글 비밀번호
+              required:
+                - password
+      responses:
+        "200":
+          description: 답글 삭제 성공
+        "400":
+          description: 잘못된 요청입니다
+        "403":
+          description: 비밀번호가 틀렸습니다
+        "404":
+          description: 존재하지 않습니다
