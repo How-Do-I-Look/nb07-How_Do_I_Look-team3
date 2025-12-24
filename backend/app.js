@@ -19,7 +19,7 @@ const app = express();
 app.use("/public", express.static(path.join(__dirname, "public")));
 app.use(
   cors({
-    origin: "http://localhost:3001",
+    origin: "https://hdi-team3-web.onrender.com",
     credentials: true,
     // 💡 허용 HTTP 메서드 명시
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE",

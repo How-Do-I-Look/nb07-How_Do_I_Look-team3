@@ -1,6 +1,8 @@
+import { SetStateAction } from "react"
+
 // 공통
 export type PaginationResponse<T> = {
-  [x: string]: SetStateAction<boolean>
+//  [x: string]: SetStateAction<boolean>
   currentPage: number,
   totalPages: number,
   totalItemCount: number
