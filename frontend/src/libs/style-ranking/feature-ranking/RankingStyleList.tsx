@@ -7,10 +7,18 @@ type RankingStyleListProps = {
 }
 
 const RankingStyleList = async ({ searchParams }: RankingStyleListProps) => {
-  const { data: styles, currentPage, totalPages } = await getRankingStyles(searchParams)
+
+  const { data: styles, currentPage, totalPages, lastElemCursor }
+  = await getRankingStyles(searchParams)
 
   return (
-    <UiRankingStyleList styles={styles} currentPage={currentPage} totalPages={totalPages} />
+    <UiRankingStyleList
+    styles={styles}
+    currentPage={currentPage}
+    totalPages={totalPages}
+    lastElemCursor={lastElemCursor}
+    rankBy={searchParams.rankBy}
+    />
   )
 }
 

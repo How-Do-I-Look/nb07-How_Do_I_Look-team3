@@ -333,10 +333,12 @@ export async function listStyleRanking(rankBy, cursor, take, page) {
   // 전체 개수
   const totalStyleCount = rankedData.length;
 
-  let startIndex = 0;
+  let startIndex = Math.max(0,(Number(page) - 1) * take);
 
   const cursorToken = parseContinuationToken(cursor);
+ ;
   if (cursorToken) {
+
     const targetId = String(cursorToken.data?.id);
     const foundIndex = rankedData.findIndex((item) => {
       return item.id === targetId;
@@ -367,7 +369,7 @@ export async function listStyleRanking(rankBy, cursor, take, page) {
   //결과
   const result = {
     // 현재 페이지
-    currentPage: page,
+    currentPage: Number(page),
     // 전체 페이지 개수
     totalPages: Math.ceil(totalStyleCount / take),
     // 스타일 전체 개수

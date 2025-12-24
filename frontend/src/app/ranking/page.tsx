@@ -13,11 +13,13 @@ type RankingPageProps = {
   searchParams: Partial<{
     page: string;
     rankBy: string;
+    cursor : string | null
   }>;
 };
 
 const RankingPage = ({ searchParams }: RankingPageProps) => {
-  const { page: pageParam, rankBy: rankByParam } = searchParams;
+  console.log(`searchParams ${JSON.stringify(searchParams)}`)
+  const { page: pageParam, rankBy: rankByParam, cursor } = searchParams;
   const page = convertPageParamToNumber(pageParam);
   const rankBy = RankBy[rankByParam as keyof typeof RankBy] || RankBy.total;
 
@@ -26,7 +28,7 @@ const RankingPage = ({ searchParams }: RankingPageProps) => {
       <div className={cx("tabWrapper")}>
         <RankingTab currentRankBy={rankBy} />
       </div>
-      <RankingStyleList searchParams={{ page, rankBy }} />
+      <RankingStyleList searchParams={{ page, rankBy, cursor }} />
     </MainLayout>
   );
 };

@@ -1,5 +1,6 @@
 // 공통
 export type PaginationResponse<T> = {
+  [x: string]: SetStateAction<boolean>
   currentPage: number,
   totalPages: number,
   totalItemCount: number
@@ -69,6 +70,7 @@ export type GalleryStylesSearchParams = {
 export type RankingStylesSearchParams = {
   rankBy: RankBy
   page: number
+  cursor : string | null | undefined
 }
 
 export type CuratingsSearchParams = {
@@ -95,6 +97,8 @@ export type GalleryStyle = {
 export type Ranking = {
   ranking: number
   rating: number
+  hasNext : boolean
+  cursor : string | null
 }
 
 export type RankingStyle = Omit<GalleryStyle, 'content'> & Ranking

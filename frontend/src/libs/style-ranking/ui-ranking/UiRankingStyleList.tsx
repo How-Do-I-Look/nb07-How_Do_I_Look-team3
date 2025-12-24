@@ -11,9 +11,17 @@ type UiRankingStyleListProps = {
   styles: RankingStyle[]
   currentPage: number
   totalPages: number
+  lastElemCursor: string | null;
+  rankBy: string;
 }
 
-const UiRankingStyleList = ({ styles, currentPage, totalPages }: UiRankingStyleListProps) => {
+const UiRankingStyleList = ({
+  styles,
+  currentPage,
+  totalPages,
+  lastElemCursor,
+  rankBy
+}: UiRankingStyleListProps) => {
 
   if (styles.length === 0) return (
     <div className={cx('emptyStyleWrapper')}>
@@ -29,7 +37,11 @@ const UiRankingStyleList = ({ styles, currentPage, totalPages }: UiRankingStyleL
         ))}
       </div>
       <div className={cx('paginationWrapper')}>
-        <Pagination currentPage={currentPage} totalPages={totalPages} />
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          lastElemCursor={lastElemCursor}
+        />
       </div>
     </>
   )

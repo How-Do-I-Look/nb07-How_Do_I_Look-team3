@@ -234,6 +234,11 @@ export const getRankingStyles = async (
   urlParams.set('rankBy', params.rankBy)
   urlParams.set('page', params.page.toString())
   urlParams.set('pageSize', RANKING_STYLES_PAGE_SIZE.toString())
+
+  if(params.cursor) {
+    urlParams.set('cursor', params.cursor);
+  }
+
   const query = urlParams.toString()
 
   const response = await fetch(`${BASE_URL}/ranking?${query}`, {
