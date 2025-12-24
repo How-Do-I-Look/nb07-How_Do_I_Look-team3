@@ -25,7 +25,7 @@ const RankingTab = ({ currentRankBy }: RankingTabProps) => {
             <Link
               href={updateQueryURL({
                 'rankBy': element.data,
-                'page' : 1,
+                'page' :  1,
                 'cursor' : null
               })}
               key={element.data}
