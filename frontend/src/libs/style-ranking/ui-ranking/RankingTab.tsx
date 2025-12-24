@@ -23,7 +23,11 @@ const RankingTab = ({ currentRankBy }: RankingTabProps) => {
           const selected = currentRankBy === element.data
           return (
             <Link
-              href={updateQueryURL({ 'rankBy': element.data })}
+              href={updateQueryURL({
+                'rankBy': element.data,
+                'page' : 1,
+                'cursor' : null
+              })}
               key={element.data}
               className={cx('menu', { selected })}
             >
