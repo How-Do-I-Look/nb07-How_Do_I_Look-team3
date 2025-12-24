@@ -38,7 +38,7 @@ module.exports = {
       },
       {
         protocol: "https",
-        hostname: "hdi-team3-api",
+        hostname: "hdi-team3-api.onrender.com",
         port: "",
         pathname: '/public/**',
       },
