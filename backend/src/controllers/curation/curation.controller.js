@@ -68,7 +68,7 @@ export const createCuration = asyncHandler(async (req, res) => {
     costEffectiveness,
   );
 
-  res.status(201).json(curation);
+  res.status(200).json(curation);
 });
 
 // 큐레이션 수정

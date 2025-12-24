@@ -57,6 +57,7 @@ export function validatePage(page) {
 }
 //페이지 크기(limit)만 검사
 export function validateLimit(limit) {
+  if (limit === undefined || limit === null) return;
   const parsedLimit = parseInt(limit, 10);
   if (isNaN(parsedLimit)) {
     throw new BadRequestError("limit는 숫자여야 합니다.");
