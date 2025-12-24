@@ -19,9 +19,10 @@ const app = express();
 app.use("/public", express.static(path.join(__dirname, "public")));
 app.use(
   cors({
-    origin: "https://hdi-team3-web.onrender.com",
+    //origin: "https://hdi-team3-web.onrender.com",
+    origin: "http://localhost:3001",
     credentials: true,
-    // 💡 허용 HTTP 메서드 명시
+    // 허용 HTTP 메서드 명시
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
   }),
 );
@@ -45,7 +46,7 @@ app.post("/images", multer.single("image"), (req, res, next) => {
     const uploadFile = req.file;
 
     const imageUrl = createStyleImage(uploadFile);
-    res.status(201).json({ imageUrl });
+    res.status(200).json({ imageUrl });
   } catch (error) {
     next(error);
   }

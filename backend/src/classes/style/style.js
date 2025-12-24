@@ -241,7 +241,6 @@ export function validateSortBy(sortBy) {
  */
 function getThumbnail(styleEntity) {
   const image = styleEntity.images?.[0];
-  console.log(image);
   if (!image || !image.path || !image.name) {
     // 이미지가 없을 때 보여줄 기본 이미지 경로
     return '/public/images/style-dummy-image.jpg';
